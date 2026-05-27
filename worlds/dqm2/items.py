@@ -116,7 +116,7 @@ item_table = {
     item_names.limbo_key: ItemData(0x86, ["Unique", "World Keys"], IC.progression),
     item_names.elf_key: ItemData(0x87, ["Unique", "World Keys"], IC.progression),
     item_names.lonely_key: ItemData(0x88, ["Unique", "World Keys"], IC.progression),
-    item_names.traveler_key: ItemData(0x89, ["Unique", "World Keys"], IC.progression),
+    item_names.travel_key: ItemData(0x89, ["Unique", "World Keys"], IC.progression),
     item_names.brawn_key: ItemData(0x8A, ["Unique", "World Keys"], IC.progression),
     item_names.baffle_key: ItemData(0x8B, ["Unique", "World Keys"], IC.progression),
     item_names.soul_key: ItemData(0x8C, ["Unique", "World Keys"], IC.progression),

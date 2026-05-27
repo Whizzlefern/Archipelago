@@ -10,9 +10,20 @@ class GameVersion(Choice):
     option_tara = 1
     default = 0
 
+class Goal(Choice):
+    """
+    Pick your victory condition.
+
+    Darck: Defeat Darck at Darck Manor
+    """
+    disply_name = "Goal"
+    option_darck = 0
+    default = 0
+
 class RandomizeKeys(Choice):
     """
     Randomize World Keys into the pool.
+    *** Not currently implemented. Leave on none
 
     None: Keys are in their vanilla locations.
     Shuffle: Keys are shuffled with each other.
@@ -20,8 +31,8 @@ class RandomizeKeys(Choice):
     """
     display_name = "Randomize Keys"
     option_none = 0
-    option_shuffle = 1
-    option_anywhere = 2
+    # option_shuffle = 1
+    # option_anywhere = 2
     default = 0
 
 class Character(Choice):
@@ -36,6 +47,7 @@ class Character(Choice):
 class RandomizeEncounters(Choice):
     """
     Randomize Encounters.
+    *** Not currently implemented, all monsters are randomized always with no restrictions.
 
     Vanilla: Encounters are the same as vanilla.
     Randomized No Boss: Encounters are random, but excludes ???? monsters.
@@ -50,6 +62,7 @@ class RandomizeEncounters(Choice):
 @dataclass
 class DQM2Options(PerGameCommonOptions):
     game_version: GameVersion
+    goal: Goal
     randomize_keys: RandomizeKeys
     character: Character
     randomize_encounters: RandomizeEncounters

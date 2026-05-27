@@ -34,35 +34,35 @@ location_data = {
     # TODO: In Game Modification 
     #    ln.farm_dad_gift: LocationData(rn.greatlog, RomLoc(0x13, 0x5E29), Flag(0x100)),
     #    ln.farm_mom_gift Flag(0x1A7)
-    ln.stable_vase_1: LocationData(rn.greatlog, RomLoc(0x13, 0x7AD1), Flag(0x13C)),
-    ln.stable_vase_2: LocationData(rn.greatlog, RomLoc(0x13, 0x7AE2), Flag(0x13D)),
+    ln.stable_vase_1: LocationData(rn.stable, RomLoc(0x13, 0x7AD1), Flag(0x13C)),
+    ln.stable_vase_2: LocationData(rn.stable, RomLoc(0x13, 0x7AE2), Flag(0x13D)),
         
     # Arena
-    ln.arena_vase: LocationData(rn.greatlog, RomLoc(0x13, 0x6D47), Flag(0x10C)),
+    ln.arena_vase: LocationData(rn.arena, RomLoc(0x13, 0x6D47), Flag(0x10C)),
     
     # Residential
-    ln.old_man_house_vase: LocationData(rn.greatlog, RomLoc(0x13, 0x6FD2), Flag(0x114)),
+    ln.old_man_house_vase: LocationData(rn.residential, RomLoc(0x13, 0x6FD2), Flag(0x114)),
     # TODO: In Game Modification 
     # ln.slime_trade_gift??? Flag(0x12E)
-    ln.housing_vase: LocationData(rn.greatlog, RomLoc(0x13, 0x7A23), Flag(0x130)),
+    ln.housing_vase: LocationData(rn.residential, RomLoc(0x13, 0x7A23), Flag(0x130)),
     
     # Shops
     # TODO: In Game Modification 
-    #    ln.rare_key_shelf: LocationData(rn.greatlog, 0, Flag(0x11E)),
-    ln.key_shop_vase: LocationData(rn.greatlog, RomLoc(0x13, 0x7A04), Flag(0x132)),
+    #    ln.rare_key_shelf: LocationData(rn.shops, 0, Flag(0x11E)),
+    ln.key_shop_vase: LocationData(rn.shops, RomLoc(0x13, 0x7A04), Flag(0x132)),
     
     # Castle
     # TODO: In Game Modification 
-    #    ln.kameha_battle_1: LocationData(rn.greatlog, RomLoc(0x85, 0x49A3), Flag(0x3A)),
-    #    ln.kameha_battle_2: LocationData(rn.greatlog, RomLoc(0x85, 0x48F6), Flag(0x3C)),
-    #    ln.castle_king_gift: LocationData(rn.greatlog, RomLoc(0x73, 0x5998), Flag(0x117)),
-    ln.kameha_chest_1: LocationData(rn.greatlog, RomLoc(0x13, 0x76C3), Flag(0x11B)),
-    ln.kameha_chest_2: LocationData(rn.greatlog, RomLoc(0x13, 0x76D4), Flag(0x11C)),
+    #    ln.kameha_battle_1: LocationData(rn.castle, RomLoc(0x85, 0x49A3), Flag(0x3A)),
+    #    ln.kameha_battle_2: LocationData(rn.castle, RomLoc(0x85, 0x48F6), Flag(0x3C)),
+    #    ln.castle_king_gift: LocationData(rn.castle, RomLoc(0x73, 0x5998), Flag(0x117)),
+    # ln.kameha_chest_1: LocationData(rn.castle, RomLoc(0x13, 0x76C3), Flag(0x11B)),
+    # ln.kameha_chest_2: LocationData(rn.castle, RomLoc(0x13, 0x76D4), Flag(0x11C)),
     
     # Treetop
-    ln.treetop_vase: LocationData(rn.greatlog, RomLoc(0x13, 0x73EB), Flag(0x126)),
-    ln.treetop_chest_1: LocationData(rn.greatlog, RomLoc(0x13, 0x7DE1), Flag(0x13E)),
-    ln.treetop_chest_2: LocationData(rn.greatlog, RomLoc(0x13, 0x7DF3), Flag(0x13F)),
+    ln.treetop_vase: LocationData(rn.treetop, RomLoc(0x13, 0x73EB), Flag(0x126)),
+    ln.treetop_chest_1: LocationData(rn.treetop, RomLoc(0x13, 0x7DE1), Flag(0x13E)),
+    ln.treetop_chest_2: LocationData(rn.treetop, RomLoc(0x13, 0x7DF3), Flag(0x13F)),
     
     # ==== Oasis World === #
     # Kalka
@@ -94,7 +94,8 @@ location_data = {
     ln.yold_barrel: LocationData(rn.yold, RomLoc(0x04, 0x5A5A), Flag(0x62)),
     
     # Polona
-    ln.polona_dance: LocationData(rn.polona, RomLoc(0x73, 0x6BEE), Flag(0x6E)),
+    # TODO: Disabled for now since it prevents picking up items from the world map if I mess with this ???
+    # ln.polona_dance: LocationData(rn.polona, RomLoc(0x73, 0x6BEE), Flag(0x6E)),
     
     # Mermaid World
     ln.mermaid_queen: LocationData(rn.mermaid, RomLoc(0x04, 0x5EA5), Flag(0x5E)),

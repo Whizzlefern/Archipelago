@@ -31,7 +31,7 @@ HAS_SKY_KEY = Has(item_names.sky_key)
 HAS_LIMBO_KEY = Has(item_names.limbo_key)
 HAS_ELF_KEY = Has(item_names.elf_key)
 HAS_LONELY_KEY = Has(item_names.lonely_key)
-HAS_TRAVELER_KEY = Has(item_names.traveler_key)
+HAS_TRAVEL_KEY = Has(item_names.travel_key)
 HAS_BRAWN_KEY = Has(item_names.brawn_key)
 HAS_BAFFLE_KEY = Has(item_names.baffle_key)
 HAS_SOUL_KEY = Has(item_names.soul_key)
@@ -48,6 +48,14 @@ def set_all_rules(world: DQM2World) -> None:
 
 
 def set_all_entrance_rules(world: DQM2World) -> None:
+    # GreatLog
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_arena), Has("Oasis World Complete"))
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_residential), Has("Oasis World Complete"))
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_shops), Has("Oasis World Complete"))
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_stable), Has("Ice World Complete"))
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_treetop), Has("Ice World Complete"))
+    world.set_rule(world.get_entrance(entrance_names.greatlog_to_castle), Has("Sky World Complete"))
+
     # Desert World
     world.set_rule(world.get_entrance(entrance_names.oasis_to_mirage), HAS_WATER_CALL)
 
@@ -86,13 +94,29 @@ def set_all_entrance_rules(world: DQM2World) -> None:
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_limbo), HAS_LIMBO_KEY)
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_elf), HAS_ELF_KEY)
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_lonely), HAS_LONELY_KEY)
-        world.set_rule(world.get_entrance(entrance_names.greatlog_to_travel), HAS_TRAVELER_KEY)
+        world.set_rule(world.get_entrance(entrance_names.greatlog_to_travel), HAS_TRAVEL_KEY)
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_brawn), HAS_BRAWN_KEY)
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_baffle), HAS_BAFFLE_KEY)
         world.set_rule(world.get_entrance(entrance_names.greatlog_to_soul), HAS_SOUL_KEY)
+    else:
+        world.set_rule(world.get_entrance(entrance_names.greatlog_to_pirate), Has("Oasis World Complete"))
+        world.set_rule(world.get_entrance(entrance_names.greatlog_to_ice), Has("Pirate World Complete"))
+        world.set_rule(world.get_entrance(entrance_names.greatlog_to_sky), Has("Ice World Complete"))
+        world.set_rule(world.get_entrance(entrance_names.greatlog_to_limbo), Has("Sky World Complete"))
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_elf), HAS_ELF_KEY)
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_lonely), HAS_LONELY_KEY)
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_travel), HAS_TRAVEL_KEY)
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_brawn), HAS_BRAWN_KEY)
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_baffle), HAS_BAFFLE_KEY)
+        # world.set_rule(world.get_entrance(entrance_names.greatlog_to_soul), HAS_SOUL_KEY)
 
 
 def set_all_location_rules(world: DQM2World) -> None:
+    # Greatlog
+    # TODO: Do these actually require Sky World?
+    world.set_rule(world.get_location(location_names.treetop_chest_1), Has("Sky World Complete"))
+    world.set_rule(world.get_location(location_names.treetop_chest_2), Has("Sky World Complete"))
+
     # Canal
     world.set_rule(world.get_location(location_names.canal_ne_vase_1), HAS_TIDAL_BELL)
     world.set_rule(world.get_location(location_names.canal_ne_vase_2), HAS_TIDAL_BELL)
@@ -124,16 +148,17 @@ def set_all_location_rules(world: DQM2World) -> None:
     # Estria
     world.set_rule(world.get_location(location_names.estria_boss_defeated), HAS_SLEEP_HERB)
             
-    # Kiral's House
-    world.set_rule(world.get_location("Lonely World Complete"), HAS_WIZ_STONE)
-    
-    # Dark Tower
-    world.set_rule(world.get_location(location_names.dark_tower_boss_defeated), HAS_PRETTY_RING)
-    world.set_rule(world.get_location(location_names.dark_tower_1f_chest), HAS_PRETTY_RING)
-    world.set_rule(world.get_location(location_names.dark_tower_3f_chest), HAS_PRETTY_RING)
-    world.set_rule(world.get_location(location_names.dark_tower_5f_chest), HAS_PRETTY_RING)
-    world.set_rule(world.get_location(location_names.dark_tower_7f_chest), HAS_PRETTY_RING)
-    world.set_rule(world.get_location("Travel World Complete"), HAS_PRETTY_RING)
+    if world.options.goal > 0:
+        # Kiral's House
+        world.set_rule(world.get_location("Lonely World Complete"), HAS_WIZ_STONE)
+
+        # Dark Tower
+        world.set_rule(world.get_location(location_names.dark_tower_boss_defeated), HAS_PRETTY_RING)
+        world.set_rule(world.get_location(location_names.dark_tower_1f_chest), HAS_PRETTY_RING)
+        world.set_rule(world.get_location(location_names.dark_tower_3f_chest), HAS_PRETTY_RING)
+        world.set_rule(world.get_location(location_names.dark_tower_5f_chest), HAS_PRETTY_RING)
+        world.set_rule(world.get_location(location_names.dark_tower_7f_chest), HAS_PRETTY_RING)
+        world.set_rule(world.get_location("Travel World Complete"), HAS_PRETTY_RING)
 
 def set_completion_condition(world: DQM2World) -> None:
     world.set_completion_rule(Has("Victory"))

@@ -75,8 +75,14 @@ class DQM2World(World):
 
         total_locations = len(self.multiworld.get_unfilled_locations(self.player))
 
+        # FOR NOW
+        unrandomized_items = [item_names.greatlog_key, item_names.oasis_key, item_names.pirate_key, item_names.ice_key,
+                              item_names.sky_key, item_names.limbo_key, item_names.elf_key, item_names.lonely_key,
+                              item_names.travel_key, item_names.brawn_key, item_names.baffle_key, item_names.soul_key,
+                              item_names.magic_key, item_names.wiz_stone, item_names.pretty_ring]
+
         for item in item_table.keys():
-            if item == item_names.greatlog_key:
+            if item in unrandomized_items:
                 continue
             itempool += [self.create_item(item)]
 

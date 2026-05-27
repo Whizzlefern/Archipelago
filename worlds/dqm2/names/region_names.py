@@ -1,5 +1,11 @@
 # Greatlog
 greatlog = "GreatLog"
+stable = "Stable"
+arena = "Arena"
+residential = "Residential"
+shops = "Shops"
+castle = "Castle"
+treetop = "Treetop"
 
 # Oasis World
 oasis_world = "Oasis World"

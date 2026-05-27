@@ -18,6 +18,12 @@ class DQM2Region(Region):
 def create_regions(world: DQM2World) -> None:
     # GreatLog
     greatlog_region = create_region(world, rn.greatlog)
+    stable_region = create_region(world, rn.stable)
+    arena_region = create_region(world, rn.arena)
+    residential_region = create_region(world, rn.residential)
+    shops_region = create_region(world, rn.shops)
+    castle_region = create_region(world, rn.castle)
+    treetop_region = create_region(world, rn.treetop)
     
     # Oasis World
     oasis_region = create_region(world, rn.oasis_world)
@@ -68,36 +74,15 @@ def create_regions(world: DQM2World) -> None:
     # Limbo World
     limbo_region = create_region(world, rn.limbo_world)
     darck_manor_region = create_region(world, rn.darck_manor)
-    
-    # Elf World
-    elf_world_region = create_region(world, rn.elf_world)
-    west_forest_region = create_region(world, rn.west_forest)
-    elven_village_region = create_region(world, rn.elven_village)
-    east_forest_region = create_region(world, rn.east_forest)
-    
-    # Lonely World
-    lonely_world_region = create_region(world, rn.lonely_world)
-    kiral_house_region = create_region(world, rn.kiral_house)
-    kiral_basement_region = create_region(world, rn.kiral_basement)
-    
-    # Travel World
-    travel_world_region = create_region(world, rn.travel_world)
-    miagen_region = create_region(world, rn.miagen)
-    traveler_hut_region = create_region(world, rn.traveler_hut)
-    dark_tower_region = create_region(world, rn.dark_tower)
-    
-    # Brawn World
-    brawn_world_region = create_region(world, rn.brawn_world)
-    brawn_tower_region = create_region(world, rn.brawn_tower)
-    # Baffle World
-    baffle_world_region = create_region(world, rn.baffle_world)
-    baffle_tower_region = create_region(world, rn.baffle_tower)
-    # Soul World
-    soul_world_region = create_region(world, rn.soul_world)
-    soul_tower_region = create_region(world, rn.soul_tower)
 
     world.multiworld.regions += [
         greatlog_region,
+        stable_region,
+        arena_region,
+        residential_region,
+        shops_region,
+        castle_region,
+        treetop_region,
         oasis_region,
         kalka_region,
         asiya_region,
@@ -137,25 +122,56 @@ def create_regions(world: DQM2World) -> None:
         hitano_castle_region,
         demon_castle_region,
         limbo_region,
-        darck_manor_region,
-        elf_world_region,
-        west_forest_region,
-        elven_village_region,
-        east_forest_region,
-        lonely_world_region,
-        kiral_house_region,
-        kiral_basement_region,
-        travel_world_region,
-        miagen_region,
-        traveler_hut_region,
-        dark_tower_region,
-        brawn_world_region,
-        brawn_tower_region,
-        baffle_world_region,
-        baffle_tower_region,
-        soul_world_region,
-        soul_tower_region
+        darck_manor_region
     ]
+
+    if world.options.goal > 0:
+        # Elf World
+        elf_world_region = create_region(world, rn.elf_world)
+        west_forest_region = create_region(world, rn.west_forest)
+        elven_village_region = create_region(world, rn.elven_village)
+        east_forest_region = create_region(world, rn.east_forest)
+
+        # Lonely World
+        lonely_world_region = create_region(world, rn.lonely_world)
+        kiral_house_region = create_region(world, rn.kiral_house)
+        kiral_basement_region = create_region(world, rn.kiral_basement)
+
+        # Travel World
+        travel_world_region = create_region(world, rn.travel_world)
+        miagen_region = create_region(world, rn.miagen)
+        traveler_hut_region = create_region(world, rn.traveler_hut)
+        dark_tower_region = create_region(world, rn.dark_tower)
+
+        # Brawn World
+        brawn_world_region = create_region(world, rn.brawn_world)
+        brawn_tower_region = create_region(world, rn.brawn_tower)
+        # Baffle World
+        baffle_world_region = create_region(world, rn.baffle_world)
+        baffle_tower_region = create_region(world, rn.baffle_tower)
+        # Soul World
+        soul_world_region = create_region(world, rn.soul_world)
+        soul_tower_region = create_region(world, rn.soul_tower)
+
+        world.multiworld.regions += [
+            elf_world_region,
+            west_forest_region,
+            elven_village_region,
+            east_forest_region,
+            lonely_world_region,
+            kiral_house_region,
+            kiral_basement_region,
+            travel_world_region,
+            miagen_region,
+            traveler_hut_region,
+            dark_tower_region,
+            brawn_world_region,
+            brawn_tower_region,
+            baffle_world_region,
+            baffle_tower_region,
+            soul_world_region,
+            soul_tower_region
+        ]
 
 def connect_regions(world: DQM2World) -> None:
     # GreatLog
@@ -164,13 +180,13 @@ def connect_regions(world: DQM2World) -> None:
     connect(world, world.player, en.greatlog_to_ice, rn.greatlog, rn.ice_world_north)
     connect(world, world.player, en.greatlog_to_sky, rn.greatlog, rn.sky_world_entrance)
     connect(world, world.player, en.greatlog_to_limbo, rn.greatlog, rn.limbo_world)
-    
-    connect(world, world.player, en.greatlog_to_elf, rn.greatlog, rn.elf_world)
-    connect(world, world.player, en.greatlog_to_lonely, rn.greatlog, rn.lonely_world)
-    connect(world, world.player, en.greatlog_to_travel, rn.greatlog, rn.travel_world)
-    connect(world, world.player, en.greatlog_to_brawn, rn.greatlog, rn.brawn_world)
-    connect(world, world.player, en.greatlog_to_baffle, rn.greatlog, rn.baffle_world)
-    connect(world, world.player, en.greatlog_to_soul, rn.greatlog, rn.soul_world)
+
+    connect(world, world.player, en.greatlog_to_stable, rn.greatlog, rn.stable)
+    connect(world, world.player, en.greatlog_to_arena, rn.greatlog, rn.arena)
+    connect(world, world.player, en.greatlog_to_residential, rn.greatlog, rn.residential)
+    connect(world, world.player, en.greatlog_to_shops, rn.greatlog, rn.shops)
+    connect(world, world.player, en.greatlog_to_castle, rn.greatlog, rn.castle)
+    connect(world, world.player, en.greatlog_to_treetop, rn.greatlog, rn.treetop)
 
     # Oasis World
     connect(world, world.player, en.oasis_to_kalka, rn.oasis_world, rn.kalka)
@@ -216,29 +232,38 @@ def connect_regions(world: DQM2World) -> None:
     
     # Limbo World
     connect(world, world.player, en.limbo_to_darck_manor, rn.limbo_world, rn.darck_manor)
-    
-    # Elf World
-    connect(world, world.player, en.elf_to_west_forest, rn.elf_world, rn.west_forest)
-    connect(world, world.player, en.elf_to_elven_village, rn.elf_world, rn.elven_village)
-    connect(world, world.player, en.elf_to_east_forest, rn.elf_world, rn.east_forest)
-    
-    # Lonely World
-    connect(world, world.player, en.lonely_to_kiral_house, rn.lonely_world, rn.kiral_house)
-    connect(world, world.player, en.kiral_house_to_kiral_basement, rn.kiral_house, rn.kiral_basement)
-    
-    # Travel World
-    connect(world, world.player, en.travel_to_miagen, rn.travel_world, rn.miagen)
-    connect(world, world.player, en.travel_to_traveler_hut, rn.travel_world, rn.traveler_hut)
-    connect(world, world.player, en.travel_to_dark_tower, rn.travel_world, rn.dark_tower)
-    
-    # Brawn World
-    connect(world, world.player, en.brawn_to_brawn_tower, rn.brawn_world, rn.brawn_tower)
 
-    # Baffle World
-    connect(world, world.player, en.baffle_to_baffle_tower, rn.baffle_world, rn.baffle_tower)
-    
-    # Soul World
-    connect(world, world.player, en.soul_to_soul_tower, rn.soul_world, rn.soul_tower)
+    if world.options.goal > 0:
+        # GreatLog
+        connect(world, world.player, en.greatlog_to_elf, rn.greatlog, rn.elf_world)
+        connect(world, world.player, en.greatlog_to_lonely, rn.greatlog, rn.lonely_world)
+        connect(world, world.player, en.greatlog_to_travel, rn.greatlog, rn.travel_world)
+        connect(world, world.player, en.greatlog_to_brawn, rn.greatlog, rn.brawn_world)
+        connect(world, world.player, en.greatlog_to_baffle, rn.greatlog, rn.baffle_world)
+        connect(world, world.player, en.greatlog_to_soul, rn.greatlog, rn.soul_world)
+
+        # Elf World
+        connect(world, world.player, en.elf_to_west_forest, rn.elf_world, rn.west_forest)
+        connect(world, world.player, en.elf_to_elven_village, rn.elf_world, rn.elven_village)
+        connect(world, world.player, en.elf_to_east_forest, rn.elf_world, rn.east_forest)
+
+        # Lonely World
+        connect(world, world.player, en.lonely_to_kiral_house, rn.lonely_world, rn.kiral_house)
+        connect(world, world.player, en.kiral_house_to_kiral_basement, rn.kiral_house, rn.kiral_basement)
+
+        # Travel World
+        connect(world, world.player, en.travel_to_miagen, rn.travel_world, rn.miagen)
+        connect(world, world.player, en.travel_to_traveler_hut, rn.travel_world, rn.traveler_hut)
+        connect(world, world.player, en.travel_to_dark_tower, rn.travel_world, rn.dark_tower)
+
+        # Brawn World
+        connect(world, world.player, en.brawn_to_brawn_tower, rn.brawn_world, rn.brawn_tower)
+
+        # Baffle World
+        connect(world, world.player, en.baffle_to_baffle_tower, rn.baffle_world, rn.baffle_tower)
+
+        # Soul World
+        connect(world, world.player, en.soul_to_soul_tower, rn.soul_world, rn.soul_tower)
 
 
 def create_region(world: DQM2World, name: str):
@@ -264,19 +289,28 @@ def create_events(world: DQM2World):
     volcano_region = world.get_region(rn.volcano)
     spirit_spring_region = world.get_region(rn.spirit_spring)
     demon_castle_region = world.get_region(rn.demon_castle)
-    darck_manor_region = world.get_region(rn.darck_manor)
-    
-    east_forest_region = world.get_region(rn.east_forest)
-    kiral_basement_region = world.get_region(rn.kiral_basement)
-    dark_tower_region = world.get_region(rn.dark_tower)
 
-    mirage_lake_region.add_event("Oasis World Complete", "Oasis World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    volcano_region.add_event("Pirate World Complete", "Pirate World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    spirit_spring_region.add_event("Ice World Complete", "Ice World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    demon_castle_region.add_event("Sky World Complete", "Sky World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    
-    east_forest_region.add_event("Elf World Complete", "Elf World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    kiral_basement_region.add_event("Lonely World Complete", "Lonely World Complete", location_type=DQM2Location, item_type=DQM2Item)
-    dark_tower_region.add_event("Travel World Complete", "Travel World Complete", location_type=DQM2Location, item_type=DQM2Item)
+    mirage_lake_region.add_event("Oasis World Complete", "Oasis World Complete", location_type=DQM2Location,
+                                 item_type=DQM2Item)
+    volcano_region.add_event("Pirate World Complete", "Pirate World Complete", location_type=DQM2Location,
+                             item_type=DQM2Item)
+    spirit_spring_region.add_event("Ice World Complete", "Ice World Complete", location_type=DQM2Location,
+                                   item_type=DQM2Item)
+    demon_castle_region.add_event("Sky World Complete", "Sky World Complete", location_type=DQM2Location,
+                                  item_type=DQM2Item)
 
-    darck_manor_region.add_event("Final Boss Defeated", "Victory", location_type=DQM2Location, item_type=DQM2Item)
+    if world.options.goal > 0:
+        east_forest_region = world.get_region(rn.east_forest)
+        kiral_basement_region = world.get_region(rn.kiral_basement)
+        dark_tower_region = world.get_region(rn.dark_tower)
+
+        east_forest_region.add_event("Elf World Complete", "Elf World Complete", location_type=DQM2Location,
+                                     item_type=DQM2Item)
+        kiral_basement_region.add_event("Lonely World Complete", "Lonely World Complete", location_type=DQM2Location,
+                                        item_type=DQM2Item)
+        dark_tower_region.add_event("Travel World Complete", "Travel World Complete", location_type=DQM2Location,
+                                    item_type=DQM2Item)
+
+    else:
+        darck_manor_region = world.get_region(rn.darck_manor)
+        darck_manor_region.add_event("Final Boss Defeated", "Victory", location_type=DQM2Location, item_type=DQM2Item)

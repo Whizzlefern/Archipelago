@@ -11,6 +11,13 @@ greatlog_to_brawn = "GreatLog to Brawn World"
 greatlog_to_baffle = "GreatLog to Baffle World"
 greatlog_to_soul = "GreatLog to Soul World"
 
+greatlog_to_stable = "GreatLog to Stable"
+greatlog_to_arena = "GreatLog to Arena"
+greatlog_to_residential = "GreatLog to Residential"
+greatlog_to_shops = "GreatLog to Shops"
+greatlog_to_castle = "GreatLog to Castle"
+greatlog_to_treetop = "GreatLog to Treetop"
+
 # From Oasis
 oasis_to_kalka = "Oasis to Kalka"
 oasis_to_asiya = "Oasis to Asiya"
