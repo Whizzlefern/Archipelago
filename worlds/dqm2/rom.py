@@ -83,7 +83,7 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         else:
             if loc_data.rom_addr:
                 rom_address = get_full_addr(loc_data.rom_addr.bank, loc_data.rom_addr.addr)
-                item_id = bytes([0xFE])
+                item_id = bytes([0x2F])
                 write_bytes(patch, rom_address, item_id)
             else:
                 continue
