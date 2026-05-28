@@ -4,7 +4,7 @@ stable = "Stable"
 arena = "Arena"
 residential = "Residential"
 shops = "Shops"
-castle = "Castle"
+greatlog_castle = "GreatLog Castle"
 treetop = "Treetop"
 
 # Oasis World

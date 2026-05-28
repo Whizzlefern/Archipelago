@@ -53,7 +53,7 @@ class DQM2Client(BizHawkClient):
             return False
 
         ctx.game = self.game
-        ctx.items_handling = 0b011
+        ctx.items_handling = 0b111
         ctx.watcher_timeout = 0.5
 
         return True
@@ -76,7 +76,7 @@ class DQM2Client(BizHawkClient):
                 RAM_ADDRS["location_flags"]
             ])
             
-            if read_result is None:
+            if read_result is None or read_result[0][0] == 0x05:
                 return
 
             num_received_items = int.from_bytes(read_result[1], "little")

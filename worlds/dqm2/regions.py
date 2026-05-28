@@ -22,7 +22,7 @@ def create_regions(world: DQM2World) -> None:
     arena_region = create_region(world, rn.arena)
     residential_region = create_region(world, rn.residential)
     shops_region = create_region(world, rn.shops)
-    castle_region = create_region(world, rn.castle)
+    greatlog_castle_region = create_region(world, rn.greatlog_castle)
     treetop_region = create_region(world, rn.treetop)
     
     # Oasis World
@@ -81,7 +81,7 @@ def create_regions(world: DQM2World) -> None:
         arena_region,
         residential_region,
         shops_region,
-        castle_region,
+        greatlog_castle_region,
         treetop_region,
         oasis_region,
         kalka_region,
@@ -185,7 +185,7 @@ def connect_regions(world: DQM2World) -> None:
     connect(world, world.player, en.greatlog_to_arena, rn.greatlog, rn.arena)
     connect(world, world.player, en.greatlog_to_residential, rn.greatlog, rn.residential)
     connect(world, world.player, en.greatlog_to_shops, rn.greatlog, rn.shops)
-    connect(world, world.player, en.greatlog_to_castle, rn.greatlog, rn.castle)
+    connect(world, world.player, en.greatlog_to_castle, rn.greatlog, rn.greatlog_castle)
     connect(world, world.player, en.greatlog_to_treetop, rn.greatlog, rn.treetop)
 
     # Oasis World

@@ -56,8 +56,8 @@ location_data = {
     #    ln.kameha_battle_1: LocationData(rn.castle, RomLoc(0x85, 0x49A3), Flag(0x3A)),
     #    ln.kameha_battle_2: LocationData(rn.castle, RomLoc(0x85, 0x48F6), Flag(0x3C)),
     #    ln.castle_king_gift: LocationData(rn.castle, RomLoc(0x73, 0x5998), Flag(0x117)),
-    # ln.kameha_chest_1: LocationData(rn.castle, RomLoc(0x13, 0x76C3), Flag(0x11B)),
-    # ln.kameha_chest_2: LocationData(rn.castle, RomLoc(0x13, 0x76D4), Flag(0x11C)),
+    ln.kameha_chest_1: LocationData(rn.greatlog_castle, RomLoc(0x13, 0x76C3), Flag(0x11B)),
+    ln.kameha_chest_2: LocationData(rn.greatlog_castle, RomLoc(0x13, 0x76D4), Flag(0x11C)),
     
     # Treetop
     ln.treetop_vase: LocationData(rn.treetop, RomLoc(0x13, 0x73EB), Flag(0x126)),
