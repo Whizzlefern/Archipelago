@@ -3,7 +3,8 @@ from pkgutil import get_data
 from typing import TYPE_CHECKING, Sequence
 
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
-from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters
+from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations
+from .monster_data import core_monster_data
 from .locations import lookup_location_to_id, location_data
 from .monster_data import core_monster_data
 
@@ -95,6 +96,7 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         if core_monster_data[monster]["family"] != 0x0a:
             valid_monster_ids.append(core_monster_data[monster]["id"])
 
+    randomize_core_monsters(world, patch)
     randomize_encounters(world, patch, game_version, valid_monster_ids)
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
@@ -110,6 +112,16 @@ def get_full_addr(bank, addr) -> int:
 
 def write_bytes(patch, address: int, data: Sequence[int] | int):
     patch.write_token(APTokenTypes.WRITE, address, data)
+
+def randomize_core_monsters(world: "DQM2World", patch):
+    for monster in core_monster_data:
+        current_byte = core_monster_data[monster]["rom_addr"]
+        if world.options.better_join_rate:
+            current_byte += 0x04
+            better_join = list(range(0x00, 0x04))
+            join = world.random.choice(better_join).to_bytes()
+            write_bytes(patch, current_byte, join)
+
 
 def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> None:
     encounters_data = cobi_encounters_data if game_version == "cobi" else tara_encounters_data
@@ -130,7 +142,12 @@ def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> 
         current_byte = encounters_data[encounter]["rom_addr"]
         write_bytes(patch, current_byte, monster)
 
-        # current_byte += 0x2
+        if world.options.better_join_rate:
+            if encounter in recruitable_locations:
+                current_byte += 0x08
+                better_join = list(range(0x01, 0x04))
+                join = world.random.choice(better_join).to_bytes(1)
+                write_bytes(patch, current_byte, join)
 
 # Canal Boss Monster Sprite
 # 69/7c37:

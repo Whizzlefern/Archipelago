@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions
+from Options import Choice, PerGameCommonOptions, Toggle
+
 
 class GameVersion(Choice):
     """
@@ -44,13 +45,20 @@ class Character(Choice):
     option_tara = 1
     default = 0
 
+class BetterJoinRate(Toggle):
+    """
+    Makes monsters more likely to join you.
+    """
+    display_name = "Better Join Rate"
+    default = 1
+
 class RandomizeEncounters(Choice):
     """
     Randomize Encounters.
     *** Not currently implemented, all monsters are randomized always with no restrictions.
 
     Vanilla: Encounters are the same as vanilla.
-    Randomized No Boss: Encounters are random, but excludes ???? monsters.
+    Randomized No Boss: Encounters are random, but excludes ??? monsters.
     Randomized: Encounters are random.
     """
     display_name = "Randomize Encounters"
@@ -64,5 +72,6 @@ class DQM2Options(PerGameCommonOptions):
     game_version: GameVersion
     goal: Goal
     randomize_keys: RandomizeKeys
+    better_join_rate: BetterJoinRate
     character: Character
     randomize_encounters: RandomizeEncounters
