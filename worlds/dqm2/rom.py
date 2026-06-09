@@ -3,7 +3,8 @@ from pkgutil import get_data
 from typing import TYPE_CHECKING, Sequence
 
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
-from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations
+from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations, \
+    boss_joins, boss_recruits
 from .monster_data import core_monster_data
 from .locations import lookup_location_to_id, location_data
 from .monster_data import core_monster_data
@@ -127,7 +128,8 @@ def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> 
     encounters_data = cobi_encounters_data if game_version == "cobi" else tara_encounters_data
 
     for encounter in encounters_data:
-        if encounter in unrandomized_encounters:
+        skip_randomize = unrandomized_encounters + boss_recruits
+        if encounter in skip_randomize:
             continue
         elif encounter in [0x10, 0x11]:
             # Don't randomize ArmyAnt, MadGopher, for now
@@ -137,8 +139,26 @@ def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> 
             water_ids = list(range(0x13c, 0x15c))
             monster = world.random.choice(water_ids).to_bytes(2, "little")
         else:
-            monster = world.random.choice(valid_ids).to_bytes(2, "little")            
-        
+            monster = world.random.choice(valid_ids).to_bytes(2, "little")
+
+        if encounter in boss_joins:
+            if encounter == 0x07:
+                write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
+            elif encounter == 0x1a:
+                write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
+                write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
+            elif encounter == 0x182:
+                write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
+                for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
+                    full_addr = get_full_addr(0x69, address)
+                    write_bytes(patch, full_addr, monster)
+            elif encounter == 0x190:
+                write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
+                write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
+
+            elif encounter == 0x1ab:
+                write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
+
         current_byte = encounters_data[encounter]["rom_addr"]
         write_bytes(patch, current_byte, monster)
 
@@ -158,7 +178,7 @@ def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> 
 # 69/7b69
 # 69/7d48
 # 69/7d84
-# 69/7d90
+# 69/7d8F
 # 69/7d9b
 # 69/7da6
 
