@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING, Sequence
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
 from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations, \
     boss_joins, boss_recruits
-from .monster_data import core_monster_data
 from .locations import lookup_location_to_id, location_data
-from .monster_data import core_monster_data
+from .monster_data import core_monster_data, base_skills
 
 if TYPE_CHECKING:
     from .world import DQM2World
@@ -115,13 +114,43 @@ def write_bytes(patch, address: int, data: Sequence[int] | int):
     patch.write_token(APTokenTypes.WRITE, address, data)
 
 def randomize_core_monsters(world: "DQM2World", patch):
-    for monster in core_monster_data:
+    for monster, values in core_monster_data.items():
         current_byte = core_monster_data[monster]["rom_addr"]
-        if world.options.better_join_rate:
-            current_byte += 0x04
-            better_join = list(range(0x00, 0x04))
-            join = world.random.choice(better_join).to_bytes()
-            write_bytes(patch, current_byte, join)
+        current_monster = bytearray()
+
+        for value in values:
+            current_value = bytearray()
+
+            if value in ["rom_addr", "id"]:
+                continue
+
+            elif value == "join" and world.options.better_join_rate:
+                better_join = list(range(0x00, 0x04))
+                current_value = world.random.choice(better_join).to_bytes()
+
+            elif value == "skills":
+                if world.options.randomize_skills:
+                    current_value = bytes(world.random.sample(base_skills, 3))
+                else:
+                    for skill in core_monster_data[monster][value]:
+                        current_value.extend(skill.to_bytes(1))
+
+            elif value == "resistances":
+                for resist in core_monster_data[monster][value]:
+                    current_value.extend(resist.to_bytes(1))
+
+            elif value == "base_exp":
+                current_value = core_monster_data[monster][value].to_bytes(2, "little")
+
+            else:
+                current_value = core_monster_data[monster][value].to_bytes(1)
+
+            current_monster.extend(current_value)
+
+        current_monster = bytes(current_monster)
+        write_bytes(patch, current_byte, current_monster)
+
+
 
 
 def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> None:

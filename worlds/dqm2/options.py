@@ -60,6 +60,13 @@ class RandomizeEncounters(Choice):
     option_randomized = 2
     default = 1
 
+class RandomizeSkills(Toggle):
+    """
+    Randomizes the skills monster learn.
+    """
+    display_name = "Randomize Skills"
+    default = 1
+
 class BetterJoinRate(Toggle):
     """
     Makes monsters more likely to join you.
@@ -74,6 +81,7 @@ class DQM2Options(PerGameCommonOptions):
     character: Character
     randomize_keys: RandomizeKeys
     randomize_encounters: RandomizeEncounters
+    randomize_skills: RandomizeSkills
     better_join_rate: BetterJoinRate
 
 dqm2_option_groups = [
@@ -89,6 +97,7 @@ dqm2_option_groups = [
 
     OptionGroup("Monster Settings", [
         RandomizeEncounters,
+        RandomizeSkills,
         BetterJoinRate
     ])
 
