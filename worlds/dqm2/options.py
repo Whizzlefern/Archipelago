@@ -1,6 +1,16 @@
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions, Toggle
+from Options import Choice, PerGameCommonOptions, Toggle, OptionGroup
 
+
+class Goal(Choice):
+    """
+    Pick your victory condition.
+
+    Darck: Defeat Darck at Darck Manor
+    """
+    disply_name = "Goal"
+    option_darck = 0
+    default = 0
 
 class GameVersion(Choice):
     """
@@ -11,14 +21,13 @@ class GameVersion(Choice):
     option_tara = 1
     default = 0
 
-class Goal(Choice):
+class Character(Choice):
     """
-    Pick your victory condition.
-
-    Darck: Defeat Darck at Darck Manor
+    Which character do you want to play as?
     """
-    disply_name = "Goal"
-    option_darck = 0
+    display_name = "Character"
+    option_cobi = 0
+    option_tara = 1
     default = 0
 
 class RandomizeKeys(Choice):
@@ -36,22 +45,6 @@ class RandomizeKeys(Choice):
     # option_anywhere = 2
     default = 0
 
-class Character(Choice):
-    """
-    Which character do you want to play as?
-    """
-    display_name = "Character"
-    option_cobi = 0
-    option_tara = 1
-    default = 0
-
-class BetterJoinRate(Toggle):
-    """
-    Makes monsters more likely to join you.
-    """
-    display_name = "Better Join Rate"
-    default = 1
-
 class RandomizeEncounters(Choice):
     """
     Randomize Encounters.
@@ -67,11 +60,39 @@ class RandomizeEncounters(Choice):
     option_randomized = 2
     default = 1
 
+class BetterJoinRate(Toggle):
+    """
+    Makes monsters more likely to join you.
+    """
+    display_name = "Better Join Rate"
+    default = 1
+
 @dataclass
 class DQM2Options(PerGameCommonOptions):
-    game_version: GameVersion
     goal: Goal
-    randomize_keys: RandomizeKeys
-    better_join_rate: BetterJoinRate
+    game_version: GameVersion
     character: Character
+    randomize_keys: RandomizeKeys
     randomize_encounters: RandomizeEncounters
+    better_join_rate: BetterJoinRate
+
+dqm2_option_groups = [
+    OptionGroup("Logic Settings", [
+        Goal,
+        GameVersion,
+        Character
+    ]),
+
+    OptionGroup("Item Settings", [
+        RandomizeKeys
+    ]),
+
+    OptionGroup("Monster Settings", [
+        RandomizeEncounters,
+        BetterJoinRate
+    ])
+
+    # OptionGroup("Cosmetic Settings", [
+    #
+    # ])
+]
