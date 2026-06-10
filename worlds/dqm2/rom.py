@@ -92,9 +92,7 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
     valid_monster_ids = []
 
     for monster in core_monster_data.keys():
-        # Temporarily disable ??? Monsters just in case you only get ??? monsters in Oasis World
-        if core_monster_data[monster]["family"] != 0x0a:
-            valid_monster_ids.append(core_monster_data[monster]["id"])
+        valid_monster_ids.append(core_monster_data[monster]["id"])
 
     randomize_core_monsters(world, patch)
     randomize_encounters(world, patch, game_version, valid_monster_ids)
