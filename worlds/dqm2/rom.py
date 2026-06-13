@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Sequence
 
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
 from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations, \
-    boss_joins, boss_recruits
+    boss_joins, boss_recruits, oasis_overworld_encounters
 from .locations import lookup_location_to_id, location_data
 from .monster_data import core_monster_data, base_skills
 
@@ -95,7 +95,14 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         valid_monster_ids.append(core_monster_data[monster]["id"])
 
     randomize_core_monsters(world, patch)
-    randomize_encounters(world, patch, game_version, valid_monster_ids)
+
+
+    encounters_data = cobi_encounters_data if game_version == "cobi" else tara_encounters_data
+    randomize_encounters(world, patch, encounters_data, valid_monster_ids)
+    # randomize_bosses()
+    # randomize_arena()
+    # randomize_gifts()
+    # randomize_mates()
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch,0x3FFFF0, slot_name)
@@ -151,50 +158,65 @@ def randomize_core_monsters(world: "DQM2World", patch):
 
 
 
-def randomize_encounters(world: "DQM2World", patch, game_version, valid_ids) -> None:
-    encounters_data = cobi_encounters_data if game_version == "cobi" else tara_encounters_data
+def randomize_encounters(world: "DQM2World", patch, encounters_data, valid_ids) -> None:
+    skip_randomize = unrandomized_encounters + boss_recruits + [0x10, 0x11]
 
-    for encounter in encounters_data:
-        skip_randomize = unrandomized_encounters + boss_recruits
+    for encounter in recruitable_locations:
         if encounter in skip_randomize:
             continue
-        elif encounter in [0x10, 0x11]:
-            # Don't randomize ArmyAnt, MadGopher, for now
-            continue
-        elif encounter == 0x1a:
-            # Make boss water type to avoid getting locked
-            water_ids = list(range(0x13c, 0x15c))
-            monster = world.random.choice(water_ids).to_bytes(2, "little")
-        else:
-            monster = world.random.choice(valid_ids).to_bytes(2, "little")
-
-        if encounter in boss_joins:
-            if encounter == 0x07:
-                write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
-            elif encounter == 0x1a:
-                write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
-                write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
-            elif encounter == 0x182:
-                write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
-                for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
-                    full_addr = get_full_addr(0x69, address)
-                    write_bytes(patch, full_addr, monster)
-            elif encounter == 0x190:
-                write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
-                write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
-
-            elif encounter == 0x1ab:
-                write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
 
         current_byte = encounters_data[encounter]["rom_addr"]
-        write_bytes(patch, current_byte, monster)
+        current_monster = bytearray()
 
-        if world.options.better_join_rate:
-            if encounter in recruitable_locations:
-                current_byte += 0x08
-                better_join = list(range(0x01, 0x04))
-                join = world.random.choice(better_join).to_bytes(1)
-                write_bytes(patch, current_byte, join)
+        current_monster.extend(world.random.choice(valid_ids).to_bytes(2, "little"))
+        current_monster = bytes(current_monster)
+
+        write_bytes(patch, current_byte, current_monster)
+
+
+
+
+    # for encounter in encounters_data:
+    #
+    #     if encounter in skip_randomize:
+    #         continue
+    #     elif encounter in [0x10, 0x11]:
+    #         # Don't randomize ArmyAnt, MadGopher, for now
+    #         continue
+    #     elif encounter == 0x1a:
+    #         # Make boss water type to avoid getting locked
+    #         water_ids = list(range(0x13c, 0x15c))
+    #         monster = world.random.choice(water_ids).to_bytes(2, "little")
+    #     else:
+    #         monster = world.random.choice(valid_ids).to_bytes(2, "little")
+    #
+    #     if encounter in boss_joins:
+    #         if encounter == 0x07:
+    #             write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
+    #         elif encounter == 0x1a:
+    #             write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
+    #             write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
+    #         elif encounter == 0x182:
+    #             write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
+    #             for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
+    #                 full_addr = get_full_addr(0x69, address)
+    #                 write_bytes(patch, full_addr, monster)
+    #         elif encounter == 0x190:
+    #             write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
+    #             write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
+    #
+    #         elif encounter == 0x1ab:
+    #             write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
+    #
+    #     current_byte = encounters_data[encounter]["rom_addr"]
+    #     write_bytes(patch, current_byte, monster)
+    #
+    #     if world.options.better_join_rate:
+    #         if encounter in recruitable_locations:
+    #             current_byte += 0x08
+    #             better_join = list(range(0x01, 0x04))
+    #             join = world.random.choice(better_join).to_bytes(1)
+    #             write_bytes(patch, current_byte, join)
 
 # Canal Boss Monster Sprite
 # 69/7c37:
