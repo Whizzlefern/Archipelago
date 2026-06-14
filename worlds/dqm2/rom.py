@@ -3,10 +3,8 @@ from pkgutil import get_data
 from typing import TYPE_CHECKING, Sequence
 
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
-from .encounters_data import tara_encounters_data, cobi_encounters_data, unrandomized_encounters, recruitable_locations, \
-    boss_joins, boss_recruits, oasis_overworld_encounters
-from .locations import lookup_location_to_id, location_data
-from .monster_data import core_monster_data, base_skills
+from .data import encounters_data as pbe, monster_data as cd
+from .locations import location_data
 
 if TYPE_CHECKING:
     from .world import DQM2World
@@ -90,16 +88,23 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
                 continue
 
     valid_monster_ids = []
+    for monster in cd.core_monster_data.keys():
+        valid_monster_ids.append(cd.core_monster_data[monster]["id"])
 
-    for monster in core_monster_data.keys():
-        valid_monster_ids.append(core_monster_data[monster]["id"])
+    encounters_data = pbe.cobi_encounters_data if game_version == "cobi" else pbe.tara_encounters_data
+    four_skills = world.options.four_skills
+    exp_multiplier = world.options.exp_multiplier
+
+    current_encounter_options = {
+        "Encounters Data": encounters_data,
+        "Valid IDs": valid_monster_ids,
+        "Four Skills": four_skills,
+        "EXP Multiplier": exp_multiplier
+    }
 
     randomize_core_monsters(world, patch)
-
-
-    encounters_data = cobi_encounters_data if game_version == "cobi" else tara_encounters_data
-    randomize_encounters(world, patch, encounters_data, valid_monster_ids)
-    # randomize_bosses()
+    randomize_encounters(world, patch, current_encounter_options)
+    # randomize_bosses(world, patch, current_encounter_options)
     # randomize_arena()
     # randomize_gifts()
     # randomize_mates()
@@ -119,8 +124,8 @@ def write_bytes(patch, address: int, data: Sequence[int] | int):
     patch.write_token(APTokenTypes.WRITE, address, data)
 
 def randomize_core_monsters(world: "DQM2World", patch):
-    for monster, values in core_monster_data.items():
-        current_byte = core_monster_data[monster]["rom_addr"]
+    for monster, values in cd.core_monster_data.items():
+        current_byte = cd.core_monster_data[monster]["rom_addr"]
         current_monster = bytearray()
 
         for value in values:
@@ -134,21 +139,21 @@ def randomize_core_monsters(world: "DQM2World", patch):
                 current_value = world.random.choice(better_join).to_bytes()
 
             elif value == "skills":
-                if world.options.randomize_skills:
-                    current_value = bytes(world.random.sample(base_skills, 3))
+                if world.options.randomize_level_skills:
+                    current_value = bytes(world.random.sample(cd.base_skills, 3))
                 else:
-                    for skill in core_monster_data[monster][value]:
+                    for skill in cd.core_monster_data[monster][value]:
                         current_value.extend(skill.to_bytes(1))
 
             elif value == "resistances":
-                for resist in core_monster_data[monster][value]:
+                for resist in cd.core_monster_data[monster][value]:
                     current_value.extend(resist.to_bytes(1))
 
             elif value == "base_exp":
-                current_value = core_monster_data[monster][value].to_bytes(2, "little")
+                current_value = cd.core_monster_data[monster][value].to_bytes(2, "little")
 
             else:
-                current_value = core_monster_data[monster][value].to_bytes(1)
+                current_value = cd.core_monster_data[monster][value].to_bytes(1)
 
             current_monster.extend(current_value)
 
@@ -156,27 +161,92 @@ def randomize_core_monsters(world: "DQM2World", patch):
         write_bytes(patch, current_byte, current_monster)
 
 
+def randomize_encounters(world: "DQM2World", patch, options) -> None:
+    skip_randomize = pbe.unrandomized_encounters + pbe.boss_recruits + [0x10, 0x11]
 
-
-def randomize_encounters(world: "DQM2World", patch, encounters_data, valid_ids) -> None:
-    skip_randomize = unrandomized_encounters + boss_recruits + [0x10, 0x11]
-
-    for encounter in recruitable_locations:
+    for encounter in pbe.all_recruitable_locations:
         if encounter in skip_randomize:
             continue
 
-        current_byte = encounters_data[encounter]["rom_addr"]
-        current_monster = bytearray()
+        current_byte = options["Encounters Data"][encounter]["rom_addr"]
+        current_encounter = create_encounter(world, encounter, options)
 
-        current_monster.extend(world.random.choice(valid_ids).to_bytes(2, "little"))
-        current_monster = bytes(current_monster)
-
-        write_bytes(patch, current_byte, current_monster)
+        write_bytes(patch, current_byte, current_encounter)
 
 
+def create_encounter(world: "DQM2World", encounter, options) -> bytes:
+    created_encounter = bytearray()
+    encounter_id = world.random.choice(options["Valid IDs"]).to_bytes(2, "little")
+    exp_multiplier = options["EXP Multiplier"]
+    scaling = f"{options["Encounters Data"][encounter]["world"]} - {options["Encounters Data"][encounter]["area"]}"
+    vanilla_world = options["Encounters Data"][encounter]["world"]
+
+    # Monster ID
+    created_encounter.extend(encounter_id)
+
+    # Skills
+    if options["Four Skills"]:
+        sample_size = 4
+    else:
+        sample_size = world.random.choice(pbe.encounter_ranges[scaling]["num_skills"])
+
+    created_skills = create_skills(world, encounter, sample_size, vanilla_world)
+    created_encounter.extend(created_skills)
+
+    # Stats
+    created_stats = create_stats(world, scaling, exp_multiplier)
+    created_encounter.extend(created_stats)
+
+    return bytes(created_encounter)
 
 
-    # for encounter in encounters_data:
+def create_skills(world, encounter, sample_size, vanilla_world) -> bytearray:
+    created_skills = bytearray()
+    valid_skills = cd.always_available
+
+    # Determine which skills should be available
+    if encounter in pbe.all_recruitable_locations:
+        if vanilla_world == "Oasis":
+            valid_skills += cd.tier1
+        elif vanilla_world == "Pirate":
+            valid_skills += cd.tier2
+        elif vanilla_world == "Ice":
+            valid_skills += cd.tier3
+        elif vanilla_world == "Sky":
+            valid_skills += cd.tier4
+        else:
+            valid_skills += cd.tier5
+
+        if vanilla_world in ["Elf", "Lonely", "Traveler"]:
+            valid_skills += cd.extra
+
+        valid_skills += cd.banned_on_boss
+
+    skills = world.random.sample(valid_skills, sample_size)
+
+    while len(skills) < 4:
+        skills.append(0xFF)
+
+    for skill in skills:
+        created_skills.extend(skill.to_bytes(1, "little"))
+
+    return created_skills
+
+
+def create_stats(world, scaling, exp_multiplier) -> bytearray:
+    created_stats = bytearray()
+    for attribute in pbe.encounter_attributes:
+        value = world.random.choice(pbe.encounter_ranges[scaling][attribute])
+        b = pbe.encounter_attributes[attribute]
+        if attribute == "exp" and exp_multiplier > 100:
+            value = int(min(value * (exp_multiplier / 100), 0xFFFF))
+        created_stats.extend(value.to_bytes(b, "little"))
+    return created_stats
+
+# def randomize_bosses(world: "DQM2World", encounter, options) -> None:
+#     for
+
+        # for encounter in encounters_data:
     #
     #     if encounter in skip_randomize:
     #         continue

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions, Toggle, OptionGroup
+from Options import Choice, PerGameCommonOptions, Toggle, OptionGroup, Range
 
 
 class Goal(Choice):
@@ -45,6 +45,20 @@ class RandomizeKeys(Choice):
     # option_anywhere = 2
     default = 0
 
+class RandomizeLevelSkills(Toggle):
+    """
+    Randomizes the skills monster learn on level up.
+    """
+    display_name = "Randomize Level Up Skills"
+    default = 1
+
+class BetterJoinRate(Toggle):
+    """
+    Makes monsters more likely to join you.
+    """
+    display_name = "Better Join Rate"
+    default = 1
+
 class RandomizeEncounters(Choice):
     """
     Randomize Encounters.
@@ -60,19 +74,23 @@ class RandomizeEncounters(Choice):
     option_randomized = 2
     default = 1
 
-class RandomizeSkills(Toggle):
+class FourSkills(Toggle):
     """
-    Randomizes the skills monster learn.
+    Forces all encounters to have four.
+    This means monsters that join you will be stronger, but so will your enemies.
     """
-    display_name = "Randomize Skills"
-    default = 1
+    display_name = "Force Four Skills"
+    default = 0
 
-class BetterJoinRate(Toggle):
+class EXPMultiplier(Range):
     """
-    Makes monsters more likely to join you.
+    Multiplies experience gained from battles.
+    200 = 2x, 300 = 3x, etc
     """
-    display_name = "Better Join Rate"
-    default = 1
+    display_name = "Experience Multiplier"
+    range_start = 100
+    range_end = 300
+    default = 150
 
 @dataclass
 class DQM2Options(PerGameCommonOptions):
@@ -80,9 +98,11 @@ class DQM2Options(PerGameCommonOptions):
     game_version: GameVersion
     character: Character
     randomize_keys: RandomizeKeys
-    randomize_encounters: RandomizeEncounters
-    randomize_skills: RandomizeSkills
+    randomize_level_skills: RandomizeLevelSkills
     better_join_rate: BetterJoinRate
+    randomize_encounters: RandomizeEncounters
+    four_skills: FourSkills
+    exp_multiplier: EXPMultiplier
 
 dqm2_option_groups = [
     OptionGroup("Logic Settings", [
@@ -96,9 +116,14 @@ dqm2_option_groups = [
     ]),
 
     OptionGroup("Monster Settings", [
-        RandomizeEncounters,
-        RandomizeSkills,
+        RandomizeLevelSkills,
         BetterJoinRate
+    ]),
+
+    OptionGroup("Encounter Settings", [
+        RandomizeEncounters,
+        FourSkills,
+        EXPMultiplier
     ])
 
     # OptionGroup("Cosmetic Settings", [
