@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions, Toggle, OptionGroup, Range
+from Options import Choice, PerGameCommonOptions, Toggle, OptionGroup, Range, DefaultOnToggle, OptionSet
 
 
 class Goal(Choice):
@@ -12,6 +12,7 @@ class Goal(Choice):
     option_darck = 0
     default = 0
 
+
 class GameVersion(Choice):
     """
     Which version of the game you're playing.
@@ -21,6 +22,7 @@ class GameVersion(Choice):
     option_tara = 1
     default = 0
 
+
 class Character(Choice):
     """
     Which character do you want to play as?
@@ -29,6 +31,7 @@ class Character(Choice):
     option_cobi = 0
     option_tara = 1
     default = 0
+
 
 class RandomizeKeys(Choice):
     """
@@ -45,34 +48,78 @@ class RandomizeKeys(Choice):
     # option_anywhere = 2
     default = 0
 
-class RandomizeLevelSkills(Toggle):
+
+class RandomizeLevelSkills(DefaultOnToggle):
     """
     Randomizes the skills monster learn on level up.
     """
     display_name = "Randomize Level Up Skills"
-    default = 1
 
-class BetterJoinRate(Toggle):
+
+class BetterJoinRate(DefaultOnToggle):
     """
     Makes monsters more likely to join you.
     """
     display_name = "Better Join Rate"
-    default = 1
 
-class RandomizeEncounters(Choice):
+
+class RandomizeEncounters(DefaultOnToggle):
     """
     Randomize Encounters.
     *** Not currently implemented, all monsters are randomized always with no restrictions.
-
-    Vanilla: Encounters are the same as vanilla.
-    Randomized No Boss: Encounters are random, but excludes ??? monsters.
-    Randomized: Encounters are random.
     """
     display_name = "Randomize Encounters"
-    option_vanilla = 0
-    option_randomized_no_boss = 1
-    option_randomized = 2
-    default = 1
+
+
+class AllowedMonsters(OptionSet):
+    """
+    Sets which monsters are allowed to be randomized.
+    If left blank, all monsters are allowed.
+
+    You can select any family name, such as "Material", or species names such as "Mimic".
+    Use "Slime (Family)" or "Slime (Species)" for Slime.
+    Use "Dragon (Family)" or "Dragon (Species)" for Dragon.
+    """
+    display_name = "Allowed Monsters for Randomization"
+    valid_keys = frozenset(
+        ["Slime (Family)", "Dragon (Family)", "Beast", "Bird", "Plant", "Bug", "Devil", "Zombie", "Material", "Water",
+         "???", "DrakSlime", "SpotSlime", "WingSlime", "TreeSlime", "Snaily", "SlimeNite", "Babble", "BoxSlime",
+         "PearlGel", "Slime (Species)", "Healer", "FangSlime", "RockSlime", "SlimeBorg", "Slabbit", "KingSlime",
+         "Metaly", "Metabble", "SpotKing", "TropicGel", "MimeSlime", "HaloSlime", "MetalKing", "GoldSlime", "GranSlime",
+         "WonderEgg", "DragonKid", "Tortragon", "Pteranod", "Gasgon", "FairyDrak", "LizardMan", "Poisongon", "Swordgon",
+         "Drygon", "Dragon (Species)", "MiniDrak", "MadDragon", "Rayburn", "Chamelgon", "LizardFly", "Andreal",
+         "KingCobra", "Vampirus", "SnakeBat", "Spikerous", "GreatDrak", "Crestpent", "WingSnake", "Coatol", "Orochi",
+         "BattleRex", "SkyDragon", "Serpentia", "Divinegon", "Orligon", "GigaDraco", "Tonguella", "Almiraj", "Catfly",
+         "PillowRat", "Saccer", "GulpBeast", "Skullroo", "WindBeast", "Beavern", "Anteater", "SuperTen", "IronTurt",
+         "Mommonja", "HammerMan", "Grizzly", "Yeti", "ArrowDog", "NoctoKing", "BeastNite", "MadGopher", "FairyRat",
+         "Unicorn", "Goategon", "WildApe", "Trumpeter", "KingLeo", "DarkHorn", "MadCat", "BigEye", "Gorago", "CatMage",
+         "Dumbira", "Picky", "Wyvern", "BullBird", "FloraJay", "DuckKite", "MadPecker", "MadRaven", "MistyWing",
+         "AquaHawk", "Dracky", "KiteHawk", "BigRoost", "StubBird", "LandOwl", "MadGoose", "MadCondor", "Emyu",
+         "Blizzardy", "Phoenix", "ZapBird", "Garudian", "WhipBird", "FunkyBird", "RainHawk", "Azurile", "Shantak",
+         "CragDevil", "MadPlant", "FireWeed", "FloraMan", "WingTree", "CactiBall", "Gulpple", "Toadstool", "AmberWeed",
+         "Slurperon", "StubSuck", "Oniono", "DanceVegi", "TreeBoy", "Devipine", "FaceTree", "HerbMan", "BeanMan",
+         "EvilSeed", "ManEater", "Snapper", "GhosTree", "Rosevine", "Egdracil", "Warubou", "Watabou", "Eggplaton",
+         "FooHero", "GiantSlug", "Catapila", "Gophecada", "Butterfly", "WeedBug", "GiantWorm", "Lipsy", "StagBug",
+         "Pyuro", "ArmyAnt", "GoHopper", "TailEater", "ArmorPede", "Eyeder", "GiantMoth", "Droll", "ArmyCrab",
+         "MadHornet", "Belzebub", "WarMantis", "HornBeet", "Sickler", "Armorpion", "Digster", "Skularach", "MultiEyes",
+         "Pixy", "MedusaEye", "AgDevil", "Demonite", "DarkEye", "EyeBall", "SkulRider", "EvilBeast", "Bubblemon",
+         "1EyeClown", "Gremlin", "ArcDemon", "Lionex", "GoatHorn", "Orc", "Ogre", "GateGuard", "ChopClown", "BossTroll",
+         "Grendal", "Akubar", "MadKnight", "EvilWell", "Gigantes", "Centasaur", "EvilArmor", "Jamirus", "Durran",
+         "Titanis", "LampGenie", "Spooky", "Skullgon", "Putrepup", "RotRaven", "Mummy", "DarkCrab", "DeadNite",
+         "Shadow", "Skulpent", "Hork", "Mudron", "NiteWhip", "WindMerge", "Reaper", "Inverzon", "FoxFire", "CaptDead",
+         "DeadNoble", "WhiteKing", "BoneSlave", "Skeletor", "Servant", "Lazamanus", "Copycat", "MadSpirit", "PomPomBom",
+         "Niterich", "JewelBag", "EvilWand", "MadCandle", "CoilBird", "Facer", "SpikyBoy", "MadMirror", "RogueNite",
+         "Puppetor", "Goopi", "Voodoll", "MetalDrak", "Balzak", "SabreMan", "CurseLamp", "Brushead", "Roboster",
+         "Roboster2", "EvilPot", "Gismo", "LavaMan", "IceMan", "Mimic", "Exaucers", "MudDoll", "Golem", "StoneMan",
+         "BombCrag", "GoldGolem", "DarkMate", "ProtoMech", "CloudKing", "Petiteel", "Moray", "WalrusMan", "RayGigas",
+         "Anemon", "Aquarella", "Merman", "Octokid", "PutreFish", "Octoreach", "Angleron", "FishRider", "RushFish",
+         "Gamanian", "Clawster", "CancerMan", "RogueWave", "Scallopa", "SeaHorse", "HoodSquid", "MerTiger", "AxeShark",
+         "Octogon", "KingSquid", "Digong", "WhaleMage", "Aquadon", "Octoraid", "Grakos", "Poseidon", "Pumpoise",
+         "Starfish", "DracoLord", "DracoLord1", "LordDraco", "Hargon", "Sidoh", "Genosidoh", "Baramos", "Zoma",
+         "AsuraZoma", "Pizzaro", "PsychoPiz", "Esterk", "Mirudraas1", "Mirudraas2", "Mudou", "DeathMore1", "DeathMore2",
+         "DeathMore3", "DarkDrium", "Orgodemir", "Orgodemir2", "Darck", "Lamia", "Dimensaur", "Kagebou"])
+    default = []
+
 
 class FourSkills(Toggle):
     """
@@ -80,7 +127,7 @@ class FourSkills(Toggle):
     This means monsters that join you will be stronger, but so will your enemies.
     """
     display_name = "Force Four Skills"
-    default = 0
+
 
 class EXPMultiplier(Range):
     """
@@ -92,6 +139,7 @@ class EXPMultiplier(Range):
     range_end = 300
     default = 150
 
+
 @dataclass
 class DQM2Options(PerGameCommonOptions):
     goal: Goal
@@ -101,8 +149,10 @@ class DQM2Options(PerGameCommonOptions):
     randomize_level_skills: RandomizeLevelSkills
     better_join_rate: BetterJoinRate
     randomize_encounters: RandomizeEncounters
+    allowed_monsters: AllowedMonsters
     four_skills: FourSkills
     exp_multiplier: EXPMultiplier
+
 
 dqm2_option_groups = [
     OptionGroup("Logic Settings", [
@@ -122,6 +172,7 @@ dqm2_option_groups = [
 
     OptionGroup("Encounter Settings", [
         RandomizeEncounters,
+        AllowedMonsters,
         FourSkills,
         EXPMultiplier
     ])

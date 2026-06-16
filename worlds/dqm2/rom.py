@@ -88,8 +88,28 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
                 continue
 
     valid_monster_ids = []
-    for monster in cd.core_monster_data.keys():
-        valid_monster_ids.append(cd.core_monster_data[monster]["id"])
+    allowed_monsters = world.options.allowed_monsters.value
+
+    if len(allowed_monsters) == 0:
+        for monster in cd.core_monster_data.keys():
+            valid_monster_ids.append(cd.core_monster_data[monster]["id"])
+    else:
+        allowed_from_family = []
+        allowed_from_species = []
+
+        for value in allowed_monsters:
+            if value in ["Slime (Family)", "Dragon (Family)", "Beast", "Bird", "Plant", "Bug", "Devil", "Zombie", "Material", "Water", "???"]:
+                if value in ["Slime (Family)", "Dragon (Family)"]:
+                    value = value.split(" ")[0]
+                for monster in cd.species_data[value]["monsters"]:
+                    allowed_from_family.append(monster)
+            else:
+                if value in ["Slime (Species)", "Dragon (Species)"]:
+                    value = value.split(" ")[0]
+                allowed_from_species.append(value)
+
+        for monster in list(set(allowed_from_family + allowed_from_species)):
+            valid_monster_ids.append(cd.core_monster_data[monster]["id"])
 
     encounters_data = pbe.cobi_encounters_data if game_version == "cobi" else pbe.tara_encounters_data
     four_skills = world.options.four_skills

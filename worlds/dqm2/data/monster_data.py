@@ -2255,6 +2255,77 @@ core_monster_data = {
                 "base_exp": 0x00}
 }
 
+species_data = {
+    "Slime": {"id": 0x00,
+              "monsters": ["DrakSlime", "SpotSlime", "WingSlime", "TreeSlime", "Snaily", "SlimeNite", "Babble",
+                           "BoxSlime", "PearlGel", "Slime", "Healer", "FangSlime", "RockSlime", "SlimeBorg", "Slabbit",
+                           "KingSlime", "Metaly", "Metabble", "SpotKing", "TropicGel", "MimeSlime", "HaloSlime",
+                           "MetalKing", "GoldSlime", "GranSlime", "WonderEgg"]},
+
+    "Dragon": {"id": 0x01,
+               "monsters": ["DragonKid", "Tortragon", "Pteranod", "Gasgon", "FairyDrak", "LizardMan", "Poisongon",
+                            "Swordgon", "Drygon", "Dragon", "MiniDrak", "MadDragon", "Rayburn", "Chamelgon",
+                            "LizardFly", "Andreal", "KingCobra", "Vampirus", "SnakeBat", "Spikerous", "GreatDrak",
+                            "Crestpent", "WingSnake", "Coatol", "Orochi", "BattleRex", "SkyDragon", "Serpentia",
+                            "Divinegon", "Orligon", "GigaDraco"]},
+
+    "Beast": {"id": 0x02, "monsters": ["Tonguella", "Almiraj", "Catfly", "PillowRat", "Saccer", "GulpBeast", "Skullroo",
+                                       "WindBeast", "Beavern", "Anteater", "SuperTen", "IronTurt", "Mommonja",
+                                       "HammerMan", "Grizzly", "Yeti", "ArrowDog", "NoctoKing", "BeastNite",
+                                       "MadGopher", "FairyRat", "Unicorn", "Goategon", "WildApe", "Trumpeter",
+                                       "KingLeo", "DarkHorn", "MadCat", "BigEye", "Gorago", "CatMage", "Dumbira"]},
+
+    "Bird": {"id": 0x03,
+             "monsters": ["Picky", "Wyvern", "BullBird", "FloraJay", "DuckKite", "MadPecker", "MadRaven", "MistyWing",
+                          "AquaHawk", "Dracky", "KiteHawk", "BigRoost", "StubBird", "LandOwl", "MadGoose", "MadCondor",
+                          "Emyu", "Blizzardy", "Phoenix", "ZapBird", "Garudian", "WhipBird", "FunkyBird", "RainHawk",
+                          "Azurile", "Shantak", "CragDevil"]},
+
+    "Plant": {"id": 0x04,
+              "monsters": ["MadPlant", "FireWeed", "FloraMan", "WingTree", "CactiBall", "Gulpple", "Toadstool",
+                           "AmberWeed", "Slurperon", "StubSuck", "Oniono", "DanceVegi", "TreeBoy", "Devipine",
+                           "FaceTree", "HerbMan", "BeanMan", "EvilSeed", "ManEater", "Snapper", "GhosTree", "Rosevine",
+                           "Egdracil", "Warubou", "Watabou", "Eggplaton", "FooHero"]},
+
+    "Bug": {"id": 0x05,
+            "monsters": ["GiantSlug", "Catapila", "Gophecada", "Butterfly", "WeedBug", "GiantWorm", "Lipsy", "StagBug",
+                         "Pyuro", "ArmyAnt", "GoHopper", "TailEater", "ArmorPede", "Eyeder", "GiantMoth", "Droll",
+                         "ArmyCrab", "MadHornet", "Belzebub", "WarMantis", "HornBeet", "Sickler", "Armorpion",
+                         "Digster", "Skularach", "MultiEyes"]},
+
+    "Devil": {"id": 0x06,
+              "monsters": ["Pixy", "MedusaEye", "AgDevil", "Demonite", "DarkEye", "EyeBall", "SkulRider", "EvilBeast",
+                           "Bubblemon", "1EyeClown", "Gremlin", "ArcDemon", "Lionex", "GoatHorn", "Orc", "Ogre",
+                           "GateGuard", "ChopClown", "BossTroll", "Grendal", "Akubar", "MadKnight", "EvilWell",
+                           "Gigantes", "Centasaur", "EvilArmor", "Jamirus", "Durran", "Titanis", "LampGenie"]},
+
+    "Zombie": {"id": 0x07,
+               "monsters": ["Spooky", "Skullgon", "Putrepup", "RotRaven", "Mummy", "DarkCrab", "DeadNite", "Shadow",
+                            "Skulpent", "Hork", "Mudron", "NiteWhip", "WindMerge", "Reaper", "Inverzon", "FoxFire",
+                            "CaptDead", "DeadNoble", "WhiteKing", "BoneSlave", "Skeletor", "Servant", "Lazamanus",
+                            "Copycat", "MadSpirit", "PomPomBom", "Niterich"]},
+
+    "Material": {"id": 0x08,
+                 "monsters": ["JewelBag", "EvilWand", "MadCandle", "CoilBird", "Facer", "SpikyBoy", "MadMirror",
+                              "RogueNite", "Puppetor", "Goopi", "Voodoll", "MetalDrak", "Balzak", "SabreMan",
+                              "CurseLamp", "Brushead", "Roboster", "Roboster2", "EvilPot", "Gismo", "LavaMan", "IceMan",
+                              "Mimic", "Exaucers", "MudDoll", "Golem", "StoneMan", "BombCrag", "GoldGolem", "DarkMate",
+                              "ProtoMech", "CloudKing"]},
+
+    "Water": {"id": 0x09,
+              "monsters": ["Petiteel", "Moray", "WalrusMan", "RayGigas", "Anemon", "Aquarella", "Merman", "Octokid",
+                           "PutreFish", "Octoreach", "Angleron", "FishRider", "RushFish", "Gamanian", "Clawster",
+                           "CancerMan", "RogueWave", "Scallopa", "SeaHorse", "HoodSquid", "MerTiger", "AxeShark",
+                           "Octogon", "KingSquid", "Digong", "WhaleMage", "Aquadon", "Octoraid", "Grakos", "Poseidon",
+                           "Pumpoise", "Starfish"]},
+
+    "???": {"id": 0x0A,
+            "monsters": ["DracoLord", "DracoLord1", "LordDraco", "Hargon", "Sidoh", "Genosidoh", "Baramos", "Zoma",
+                         "AsuraZoma", "Pizzaro", "PsychoPiz", "Esterk", "Mirudraas1", "Mirudraas2", "Mudou",
+                         "DeathMore1", "DeathMore2", "DeathMore3", "DarkDrium", "Orgodemir", "Orgodemir2", "Darck",
+                         "Lamia", "Dimensaur", "Kagebou"]}
+}
+
 base_skills = [0x01, 0x04, 0x07, 0x0A, 0x0D, 0x10, 0x13, 0x15, 0x16, 0x19, 0x1B, 0x1E, 0x20, 0x21, 0x22, 0x23, 0x24,
                0x25, 0x27, 0x29, 0x2B, 0x2D, 0x2E, 0x2F, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x38, 0x39, 0x3A, 0x3B,
                0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x44, 0x48, 0x4A, 0x4B, 0x4C, 0x4E, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55,
