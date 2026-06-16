@@ -163,23 +163,91 @@ def randomize_core_monsters(world: "DQM2World", patch):
 
 def randomize_encounters(world: "DQM2World", patch, options) -> None:
     skip_randomize = pbe.unrandomized_encounters + pbe.boss_recruits + [0x10, 0x11]
+    all_encounters = options["Encounters Data"]
+
 
     for encounter in pbe.all_recruitable_locations:
         if encounter in skip_randomize:
             continue
 
-        current_byte = options["Encounters Data"][encounter]["rom_addr"]
+        current_byte = all_encounters[encounter]["rom_addr"]
         current_encounter = create_encounter(world, encounter, options)
+        write_bytes(patch, current_byte, current_encounter)
+
+    for encounter in pbe.all_boss_locations:
+        if encounter in skip_randomize:
+            continue
+
+        current_byte = all_encounters[encounter]["rom_addr"]
+        current_encounter = create_encounter(world, encounter, options)
+        if encounter in pbe.boss_joins:
+            create_boss_recruit(world, patch, encounter, current_encounter, all_encounters)
 
         write_bytes(patch, current_byte, current_encounter)
+
+    # for encounter in pbe.all_arena_fights:
+        #     current_encounter = create_encounter(world, encounter, options)
+
+
+
+
+#    for encounter in pbe.all_recruitable_locations:
+#        if encounter in skip_randomize:
+#            continue
+#
+#        current_byte = options["Encounters Data"][encounter]["rom_addr"]
+#        current_encounter = create_encounter(world, encounter, options)
+#
+#        write_bytes(patch, current_byte, current_encounter)
+#
+#    for encounter in pbe.all_boss_locations:
+#        if encounter in skip_randomize:
+#            continue
+#
+#        current_byte = options["Encounters Data"][encounter]["rom_addr"]
+#        current_boss = create_boss(world, encounter, options)
+#
+#        write_bytes(patch, current_byte, current_boss)
+#
+#
+#    created_boss.extend(boss_id)
+#
+#    if options["Four Skills"]:
+#        sample_size = 4
+#    else:
+#        if encounter in [0x7, 0x182, 0x1ab, 0x74, 0x1ec, 0x1f9]:
+#            sample_size = 1
+#        elif encounter in [0x1a, 0x1c, 0x18f, 0x32, 0x6d, 0x1a6, 0x1ea, 0x1eb]:
+#            sample_size = 2
+#        elif encounter in [0x190, 0x44, 0x199, 0x19b, 0x19c, 0x64, 0x6c, 0x73, 0x75, 0x1df, 0x1e2, 0x1f8, 0x1fa, 0x1fb]:
+#            sample_size = 3
+#        elif encounter in [0x19a, 0x6b, 0x179, 0x1e9]:
+#            sample_size = 4
+#        else:
+#            sample_size = world.random.choice([1, 2, 3, 4])
+#
+#    created_skills = create_skills(world, encounter, sample_size)
+#    created_boss.extend(created_skills)
+#
+#    return bytes(created_boss)
 
 
 def create_encounter(world: "DQM2World", encounter, options) -> bytes:
     created_encounter = bytearray()
-    encounter_id = world.random.choice(options["Valid IDs"]).to_bytes(2, "little")
     exp_multiplier = options["EXP Multiplier"]
-    scaling = f"{options["Encounters Data"][encounter]["world"]} - {options["Encounters Data"][encounter]["area"]}"
+
+    if encounter == 0x1a:
+        water_ids = list(range(0x13c, 0x15c))
+        encounter_id = world.random.choice(water_ids).to_bytes(2, "little")
+    else:
+        encounter_id = world.random.choice(options["Valid IDs"]).to_bytes(2, "little")
+
     vanilla_world = options["Encounters Data"][encounter]["world"]
+    vanilla_area = options["Encounters Data"][encounter]["area"]
+    if vanilla_area != "":
+        scaling = f"{vanilla_world} - {vanilla_area}"
+    else:
+        scaling = f"{vanilla_world}"
 
     # Monster ID
     created_encounter.extend(encounter_id)
@@ -188,7 +256,10 @@ def create_encounter(world: "DQM2World", encounter, options) -> bytes:
     if options["Four Skills"]:
         sample_size = 4
     else:
-        sample_size = world.random.choice(pbe.encounter_ranges[scaling]["num_skills"])
+        if encounter == 0x179:
+            sample_size = 4
+        else:
+            sample_size = world.random.choice(pbe.encounter_ranges[scaling]["num_skills"])
 
     created_skills = create_skills(world, encounter, sample_size, vanilla_world)
     created_encounter.extend(created_skills)
@@ -200,29 +271,41 @@ def create_encounter(world: "DQM2World", encounter, options) -> bytes:
     return bytes(created_encounter)
 
 
-def create_skills(world, encounter, sample_size, vanilla_world) -> bytearray:
+def create_skills(world: "DQM2World", encounter, sample_size, vanilla_world=None, vanilla_area=None) -> bytearray:
     created_skills = bytearray()
     valid_skills = cd.always_available
 
     # Determine which skills should be available
+    if vanilla_world == "Oasis":
+        valid_skills += cd.tier1
+    elif vanilla_world == "Pirate":
+        valid_skills += cd.tier2
+    elif vanilla_world == "Ice":
+        valid_skills += cd.tier3
+    elif vanilla_world == "Sky":
+        valid_skills += cd.tier4
+    else:
+        valid_skills += cd.tier5
+
+    if vanilla_world in ["Elf", "Lonely", "Traveler"]:
+        valid_skills += cd.extra
+
     if encounter in pbe.all_recruitable_locations:
-        if vanilla_world == "Oasis":
-            valid_skills += cd.tier1
-        elif vanilla_world == "Pirate":
-            valid_skills += cd.tier2
-        elif vanilla_world == "Ice":
-            valid_skills += cd.tier3
-        elif vanilla_world == "Sky":
-            valid_skills += cd.tier4
-        else:
-            valid_skills += cd.tier5
-
-        if vanilla_world in ["Elf", "Lonely", "Traveler"]:
-            valid_skills += cd.extra
-
         valid_skills += cd.banned_on_boss
 
     skills = world.random.sample(valid_skills, sample_size)
+
+    # Ensure dance move on Cape Boss
+    if encounter == 0x1a:
+        dance_moves = [0x76, 0x78, 0x7a, 0x7c, 0x7d]
+        dance_check: bool = False
+        for dance in dance_moves:
+            if dance in skills:
+                dance_check = True
+
+        if not dance_check:
+            del skills[-1]
+            skills.append(world.random.choice(dance_moves))
 
     while len(skills) < 4:
         skills.append(0xFF)
@@ -233,7 +316,7 @@ def create_skills(world, encounter, sample_size, vanilla_world) -> bytearray:
     return created_skills
 
 
-def create_stats(world, scaling, exp_multiplier) -> bytearray:
+def create_stats(world: "DQM2World", scaling, exp_multiplier) -> bytearray:
     created_stats = bytearray()
     for attribute in pbe.encounter_attributes:
         value = world.random.choice(pbe.encounter_ranges[scaling][attribute])
@@ -243,50 +326,72 @@ def create_stats(world, scaling, exp_multiplier) -> bytearray:
         created_stats.extend(value.to_bytes(b, "little"))
     return created_stats
 
+
+def create_boss_recruit(world: "DQM2World", patch, encounter, current_encounter, all_encounters) -> None:
+    current_recruit = bytearray(current_encounter)
+    recruit_hp = int.from_bytes(current_encounter[10:12], "little")
+    if encounter in [0x7, 0x1A, 0x182, 0x1AB]:
+        recruit_hp = int((recruit_hp / 4) * world.random.choice([0.80, 0.85, 0.90, 0.95, 1, 1.05, 1.10, 1.15, 1.20]))
+    else:
+        recruit_hp = int((recruit_hp / 10) * world.random.choice([0.80, 0.85, 0.90, 0.95, 1, 1.05, 1.10, 1.15, 1.20]))
+
+    recruit_hp = recruit_hp.to_bytes(2, "little")
+    current_recruit[10] = recruit_hp[0]
+    current_recruit[11] = recruit_hp[1]
+
+    if encounter == 0x190:
+        current_byte = all_encounters[0x1AF]["rom_addr"]
+    else:
+        ptr = encounter + 0x1
+        current_byte = all_encounters[ptr]["rom_addr"]
+
+    current_recruit = bytes(current_recruit)
+    write_bytes(patch, current_byte, current_recruit)
+
 # def randomize_bosses(world: "DQM2World", encounter, options) -> None:
 #     for
 
-        # for encounter in encounters_data:
-    #
-    #     if encounter in skip_randomize:
-    #         continue
-    #     elif encounter in [0x10, 0x11]:
-    #         # Don't randomize ArmyAnt, MadGopher, for now
-    #         continue
-    #     elif encounter == 0x1a:
-    #         # Make boss water type to avoid getting locked
-    #         water_ids = list(range(0x13c, 0x15c))
-    #         monster = world.random.choice(water_ids).to_bytes(2, "little")
-    #     else:
-    #         monster = world.random.choice(valid_ids).to_bytes(2, "little")
-    #
-    #     if encounter in boss_joins:
-    #         if encounter == 0x07:
-    #             write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
-    #         elif encounter == 0x1a:
-    #             write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
-    #             write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
-    #         elif encounter == 0x182:
-    #             write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
-    #             for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
-    #                 full_addr = get_full_addr(0x69, address)
-    #                 write_bytes(patch, full_addr, monster)
-    #         elif encounter == 0x190:
-    #             write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
-    #             write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
-    #
-    #         elif encounter == 0x1ab:
-    #             write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
-    #
-    #     current_byte = encounters_data[encounter]["rom_addr"]
-    #     write_bytes(patch, current_byte, monster)
-    #
-    #     if world.options.better_join_rate:
-    #         if encounter in recruitable_locations:
-    #             current_byte += 0x08
-    #             better_join = list(range(0x01, 0x04))
-    #             join = world.random.choice(better_join).to_bytes(1)
-    #             write_bytes(patch, current_byte, join)
+# for encounter in encounters_data:
+#
+#     if encounter in skip_randomize:
+#         continue
+#     elif encounter in [0x10, 0x11]:
+#         # Don't randomize ArmyAnt, MadGopher, for now
+#         continue
+#     elif encounter == 0x1a:
+#         # Make boss water type to avoid getting locked
+#         water_ids = list(range(0x13c, 0x15c))
+#         monster = world.random.choice(water_ids).to_bytes(2, "little")
+#     else:
+#         monster = world.random.choice(valid_ids).to_bytes(2, "little")
+#
+#     if encounter in boss_joins:
+#         if encounter == 0x07:
+#             write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
+#         elif encounter == 0x1a:
+#             write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
+#             write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
+#         elif encounter == 0x182:
+#             write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
+#             for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
+#                 full_addr = get_full_addr(0x69, address)
+#                 write_bytes(patch, full_addr, monster)
+#         elif encounter == 0x190:
+#             write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
+#             write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
+#
+#         elif encounter == 0x1ab:
+#             write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
+#
+#     current_byte = encounters_data[encounter]["rom_addr"]
+#     write_bytes(patch, current_byte, monster)
+#
+#     if world.options.better_join_rate:
+#         if encounter in recruitable_locations:
+#             current_byte += 0x08
+#             better_join = list(range(0x01, 0x04))
+#             join = world.random.choice(better_join).to_bytes(1)
+#             write_bytes(patch, current_byte, join)
 
 # Canal Boss Monster Sprite
 # 69/7c37:

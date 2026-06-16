@@ -5407,6 +5407,15 @@ s_free_battle = [
     0x26D, 0x26E, 0x26F, 0x270, 0x271, 0x272, 0x273, 0x274, 0x275, 0x276
 ]
 
+npc_boss_fights = [
+    0xA9, 0xAA, 0xAB,
+    0x1FC, 0x1FD, 0x1FE,
+    0x205, 0x206, 0x207,
+    0x208, 0x209, 0x20A,
+    0x21B, 0x21C, 0x21D,
+    0x25F, 0x260, 0x261
+]
+
 all_arena_fights = kiddie_class_fights + c_class_fights + b_class_fights + a_class_fights + s_class_fights + c_free_battle + b_free_battle + a_free_battle + s_free_battle
 
 all_recruitable_locations = oasis_overworld_encounters + canal_encounters + pirate_overworld_encounters + pirate_ocean_encounters + cape_cave_encounters + ghost_ship_encounters + lighthouse_encounters + volcano_encounters + ice_overworld_encounters + gold_mine_encounters + southern_forest_encounters + eastern_mountain_encounters + lake_tower_encounters + sky_overworld_encounters + sage_tower_encounters + graveyard_encounters + small_cave_encounters + wind_tower_encounters + limbo_overworld_encounters + darck_castle_encounters + elf_overworld_encounters + east_forest_encounters + lonely_overworld_encounters + kiral_basement_encounters + travel_overworld_encounters + dark_tower_encounters
