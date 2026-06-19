@@ -111,18 +111,21 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         for monster in list(set(allowed_from_family + allowed_from_species)):
             valid_monster_ids.append(cd.core_monster_data[monster]["id"])
 
-    encounters_data = pbe.cobi_encounters_data if game_version == "cobi" else pbe.tara_encounters_data
-    four_skills = world.options.four_skills
-    exp_multiplier = world.options.exp_multiplier
-
-    current_encounter_options = {
-        "Encounters Data": encounters_data,
-        "Valid IDs": valid_monster_ids,
-        "Four Skills": four_skills,
-        "EXP Multiplier": exp_multiplier
+    current_core_options = {
+        "Better Join Rate": world.options.better_join_rate,
+        "Randomize Level Up Skills": world.options.randomize_level_skills,
+        "Randomize EXP Growth": world.options.randomize_exp_growth,
+        "Randomize Stat Growths": world.options.randomize_stat_growths
     }
 
-    randomize_core_monsters(world, patch)
+    current_encounter_options = {
+        "Encounters Data": pbe.cobi_encounters_data if game_version == "cobi" else pbe.tara_encounters_data,
+        "Valid IDs": valid_monster_ids,
+        "Four Skills": world.options.four_skills,
+        "EXP Multiplier": world.options.exp_multiplier
+    }
+
+    randomize_core_monsters(world, patch, current_core_options)
     randomize_encounters(world, patch, current_encounter_options)
     # randomize_bosses(world, patch, current_encounter_options)
     # randomize_arena()
@@ -143,7 +146,12 @@ def get_full_addr(bank, addr) -> int:
 def write_bytes(patch, address: int, data: Sequence[int] | int):
     patch.write_token(APTokenTypes.WRITE, address, data)
 
-def randomize_core_monsters(world: "DQM2World", patch):
+
+def randomize_core_monsters(world: "DQM2World", patch, options) -> None:
+    population = list(range(0, 32))
+    weights = [0.1] + ([1] * 31)
+    growths = ["hp_growth", "mp_growth", "atk_growth", "def_growth", "agi_growth", "int_growth"]
+
     for monster, values in cd.core_monster_data.items():
         current_byte = cd.core_monster_data[monster]["rom_addr"]
         current_monster = bytearray()
@@ -154,26 +162,36 @@ def randomize_core_monsters(world: "DQM2World", patch):
             if value in ["rom_addr", "id"]:
                 continue
 
-            elif value == "join" and world.options.better_join_rate:
-                better_join = list(range(0x00, 0x04))
-                current_value = world.random.choice(better_join).to_bytes()
+            elif value == "join" and options["Better Join Rate"]:
+                better_join = list(range(0x01, 0x04))
+                current_value = bytes([world.random.choice(better_join)])
+
+            elif value == "exp_growth" and options["Randomize EXP Growth"]:
+                if options["Randomize EXP Growth"].current_key == "fast":
+                    growth_options = list(range(0x00, 0x08))
+                else:
+                    growth_options = population
+                current_value = bytes([world.random.choice(growth_options)])
 
             elif value == "skills":
-                if world.options.randomize_level_skills:
+                if options["Randomize Level Up Skills"]:
                     current_value = bytes(world.random.sample(cd.base_skills, 3))
                 else:
                     for skill in cd.core_monster_data[monster][value]:
-                        current_value.extend(skill.to_bytes(1))
+                        current_value.extend(bytes([skill]))
+
+            elif value in growths and options["Randomize Stat Growths"]:
+                current_value = bytes(world.random.choices(population=population, weights=weights, k=1))
 
             elif value == "resistances":
                 for resist in cd.core_monster_data[monster][value]:
-                    current_value.extend(resist.to_bytes(1))
+                    current_value.extend(bytes([resist]))
 
             elif value == "base_exp":
                 current_value = cd.core_monster_data[monster][value].to_bytes(2, "little")
 
             else:
-                current_value = cd.core_monster_data[monster][value].to_bytes(1)
+                current_value = bytes([cd.core_monster_data[monster][value]])
 
             current_monster.extend(current_value)
 

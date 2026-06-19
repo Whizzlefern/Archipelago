@@ -63,6 +63,28 @@ class BetterJoinRate(DefaultOnToggle):
     display_name = "Better Join Rate"
 
 
+class RandomizeEXPGrowth(Choice):
+    """
+    Randomize how quickly monsters gain exp.
+
+    Vanilla: EXP Growth is unchanged.
+    Randomized: EXP Growth is randomized.
+    Fast: EXP Growth is randomized, but only fast growth rates are selected.
+    """
+    display_name = "Randomize EXP Growth"
+    option_vanilla = 0
+    option_randomized = 1
+    option_fast = 2
+    default = 0
+
+
+class RandomizeStatGrowths(Toggle):
+    """
+    Randomize monster stat growths.
+    """
+    display_name = "Randomize Stat Growths"
+
+
 class RandomizeEncounters(DefaultOnToggle):
     """
     Randomize Encounters.
@@ -148,6 +170,8 @@ class DQM2Options(PerGameCommonOptions):
     randomize_keys: RandomizeKeys
     randomize_level_skills: RandomizeLevelSkills
     better_join_rate: BetterJoinRate
+    randomize_exp_growth: RandomizeEXPGrowth
+    randomize_stat_growths: RandomizeStatGrowths
     randomize_encounters: RandomizeEncounters
     allowed_monsters: AllowedMonsters
     four_skills: FourSkills
@@ -167,7 +191,9 @@ dqm2_option_groups = [
 
     OptionGroup("Monster Settings", [
         RandomizeLevelSkills,
-        BetterJoinRate
+        BetterJoinRate,
+        RandomizeEXPGrowth,
+        RandomizeStatGrowths
     ]),
 
     OptionGroup("Encounter Settings", [
