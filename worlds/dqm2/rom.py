@@ -282,6 +282,10 @@ def create_encounter(world: "DQM2World", encounter, options) -> bytes:
     created_encounter.extend(created_skills)
 
     # Stats
+    # TODO: Band-aid give Slash a boost
+    if encounter == 0x1:
+        print(0x1)
+        scaling = "Oasis - Overworld"
     created_stats = create_stats(world, current_encounter, scaling, exp_multiplier)
     created_encounter.extend(created_stats)
 
