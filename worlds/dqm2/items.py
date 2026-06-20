@@ -119,8 +119,8 @@ item_table = {
     item_names.travel_key: ItemData(0x89, ["Unique", "World Keys"], IC.progression),
     item_names.brawn_key: ItemData(0x8A, ["Unique", "World Keys"], IC.progression),
     item_names.baffle_key: ItemData(0x8B, ["Unique", "World Keys"], IC.progression),
-    item_names.soul_key: ItemData(0x8C, ["Unique", "World Keys"], IC.progression),
-    item_names.magic_key: ItemData(0x8D, ["Unique", "Travel Items"], IC.useful)
+    item_names.soul_key: ItemData(0x8C, ["Unique", "World Keys"], IC.progression)
+    # item_names.magic_key: ItemData(0x8D, ["Unique", "Travel Items"], IC.useful)
 }
 
 filler_items = [item_name for item_name, data in item_table.items() if "Unique" not in data.groups]
