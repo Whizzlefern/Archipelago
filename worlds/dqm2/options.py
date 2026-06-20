@@ -159,7 +159,7 @@ class EXPMultiplier(Range):
     display_name = "Experience Multiplier"
     range_start = 100
     range_end = 300
-    default = 150
+    default = 100
 
 
 @dataclass
