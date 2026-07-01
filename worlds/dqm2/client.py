@@ -20,7 +20,9 @@ RAM_ADDRS = {
     "game_state": (0xC5DB, 2, "System Bus"),
     "received_item_index": (0xCC1E, 2, "System Bus"),
     "received_item": (0xCC1D, 1, "System Bus"),
-    "location_flags": (0xCBD7, 0x68, "System Bus")
+    "location_flags": (0xCBD7, 0x68, "System Bus"),
+
+    "map_data": (0xFF8E, 5, "System Bus")
 }
 
 logger = logging.getLogger()
