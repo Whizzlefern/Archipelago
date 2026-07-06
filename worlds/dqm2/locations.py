@@ -122,7 +122,7 @@ location_data = {
     ln.ghost_ship_2f_hidden_chest_3: LocationData(0x213, rn.ghost_ship, RomLoc(0x04, 0x6093), Flag(0xED)),
     ln.ghost_ship_2f_center_chest: LocationData(0x214, rn.ghost_ship, RomLoc(0x04, 0x60A4), Flag(0xEE)),
     ln.ghost_ship_deck_w_barrel: LocationData(0x215, rn.ghost_ship, RomLoc(0x04, 0x60B5), Flag(0xEF)),
-    ln.ghost_ship_deck_e_barrel: LocationData(0x126, rn.ghost_ship, RomLoc(0x04, 0x60C6), Flag(0xF0)),
+    ln.ghost_ship_deck_e_barrel: LocationData(0x216, rn.ghost_ship, RomLoc(0x04, 0x60C6), Flag(0xF0)),
     ln.ghost_ship_1f_s_vase: LocationData(0x217, rn.ghost_ship, RomLoc(0x04, 0x6037), Flag(0xF2)),
 
     # Lighthouse
