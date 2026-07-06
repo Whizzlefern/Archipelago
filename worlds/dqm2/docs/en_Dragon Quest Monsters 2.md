@@ -5,7 +5,7 @@
 This randomizer will randomize all items found in chests and vases, as well as most items from cut scenes or NPCs.
 Some locations are not *yet* randomized: see the Current Quirks section below.
 
-Additionally, monsters are able to be randomized in full with many customizable settings.
+Additionally, monsters can be randomized, with many customizable settings.
 
 ## What things can be randomized?
 
@@ -31,10 +31,11 @@ Monsters:
 - Acquiring the Tidal Bell, Har Mirror, or Sky Shield automatically grants you their abilities.
 - Co-Op Skills are usable regardless of the version of the game.
 - The Starry Night Shrine is accessible from the start.
+- When your inventory is full, items will go into the vault automatically.
 
 ## What features are planned?
 
-A lot, but most will take awhile to do. Hopefully you'll see these listed above in the future : )
+A lot, but most will take a while to do. Hopefully you'll see these listed above in the future : )
 These are not ordered in any specific way.
 
 - Randomize Keys
