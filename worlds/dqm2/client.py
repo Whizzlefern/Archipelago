@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Dict, Set
+from typing import TYPE_CHECKING, Dict, Set, Any
 
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
@@ -22,7 +22,9 @@ RAM_ADDRS = {
     "received_item": (0xCC1D, 1, "System Bus"),
     "location_flags": (0xCBD7, 0x68, "System Bus"),
 
-    "map_data": (0xFF8E, 5, "System Bus")
+    "map_data": (0xFF8E, 5, "System Bus"),
+    "story_world_completions": (0xCBDB, 1, "System Bus"),
+    "post_world_completions": (0xCC17, 2, "System Bus")
 }
 
 logger = logging.getLogger()
@@ -34,6 +36,7 @@ class DQM2Client(BizHawkClient):
     patch_suffix = (".apdqm2t", "apdqm2c")
 
     local_checked_locations: Set[int]
+    local_tracker: Dict[str, Any]
     item_id_to_name: Dict[str, int]
     location_name_to_id: Dict[str, int]
 
@@ -42,6 +45,7 @@ class DQM2Client(BizHawkClient):
         self.item_id_to_name = lookup_name_to_id
         self.location_name_to_id = lookup_location_to_id
         self.local_checked_locations = set()
+        self.local_tracker =  {}
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         try:
@@ -75,7 +79,10 @@ class DQM2Client(BizHawkClient):
                 RAM_ADDRS["game_state"],
                 RAM_ADDRS["received_item_index"],
                 RAM_ADDRS["received_item"],
-                RAM_ADDRS["location_flags"]
+                RAM_ADDRS["location_flags"],
+                RAM_ADDRS["map_data"],
+                RAM_ADDRS["story_world_completions"],
+                RAM_ADDRS["post_world_completions"]
             ])
             
             if read_result is None or read_result[0][0] == 0x05:
@@ -84,6 +91,8 @@ class DQM2Client(BizHawkClient):
             num_received_items = int.from_bytes(read_result[1], "little")
             received_item_is_empty = (read_result[2][0] == 0)
             flag_bytes = read_result[3]
+            position_data = read_result[4]
+            world_completions = read_result[5] + read_result[6]
             
             # Only checks for Darck, update once more goals are available
             if (flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x01 == 0x01) and not ctx.finished_game:
@@ -91,6 +100,7 @@ class DQM2Client(BizHawkClient):
                 ctx.finished_game = True
 
             await self.process_checked_locations(ctx, flag_bytes)
+            await self.process_tracker_updates(ctx, position_data, world_completions)
             
             if received_item_is_empty:
               await self.process_received_items(ctx, num_received_items)
@@ -111,8 +121,61 @@ class DQM2Client(BizHawkClient):
                 location_id = self.location_name_to_id[loc_name]
                 checked_locations.add(location_id)
 
-        logger.info(f"{checked_locations}")
+        # logger.info(f"{checked_locations}")
         await ctx.check_locations(checked_locations)
+
+
+    async def process_tracker_updates(self, ctx: "BizHawkClientContext", position_data, world_completions):
+        local_tracker = dict(self.local_tracker)
+
+        # Current Map
+        map_data = [
+            (2, "Map ID"),
+            (1, "Map X"),
+            (4, "Map Y")
+            # (0, "Player X")
+            # (3, "Player Y")
+        ]
+        for byte, name in map_data:
+            local_tracker[f"{name}"] = int(position_data[byte])
+
+        completions_data = [
+            (0, 0x02, "Desert World"),
+            (0, 0x04, "Pirate World"),
+            (0, 0x08, "Ice World"),
+            (0, 0x10, "Sky World"),
+            (0, 0x20, "Limbo World"),
+            (1, 0x08, "Elf World"),
+            (1, 0x10, "Lonely World"),
+            (1, 0x20, "Traveler World"),
+            (1, 0x40, "Brawn World"),
+            (1, 0x80, "Baffle World"),
+            (2, 0x01, "Soul World")
+        ]
+
+        for byte, bit_mask, name in completions_data:
+            if world_completions[byte] & bit_mask:
+                local_tracker[f"{name} Complete"] = True
+
+        updates = {}
+        for key, value in local_tracker.items():
+            if key not in self.local_tracker or self.local_tracker[key] != value:
+                updates[key] = value
+
+        if len(updates) > 0:
+            await ctx.send_msgs([{
+                "cmd": "Set",
+                "key": f"DQM2_{ctx.team}_{ctx.slot}",
+                "default": {},
+                "operations": [{
+                    "operation": "update",
+                    "value": updates
+                }]
+            }])
+
+        logger.info(updates)
+        self.local_tracker = local_tracker
+
     
     @staticmethod
     async def process_received_items(ctx: "BizHawkClientContext", num_received_items: int):
