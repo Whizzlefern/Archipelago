@@ -179,9 +179,9 @@ hitano_castle_vase = "Sky: Hitano Castle - Vase"
 
 # Demon Castle
 demon_castle_1f_chest = "Sky: Demon Castle - 1F Chest"
-demon_castle_b1f_chest = "Sky: Demon Castle - B1F Chest"
 demon_castle_b2f_chest = "Sky: Demon Castle - B2F Chest"
 demon_castle_b4f_chest = "Sky: Demon Castle - B4F Chest"
+demon_castle_b6f_chest = "Sky: Demon Castle - B6F Chest"
 demon_castle_boss_defeated = "Sky: Demon Castle - Boss Defeated"
 demon_castle_boss_gift = "Sky: Demon Castle - Boss Gift"
 ### End Sky ###

@@ -216,9 +216,9 @@ location_data = {
 
     # Demon Castle
     ln.demon_castle_1f_chest: LocationData(0x40E, rn.demon_castle, RomLoc(0x13, 0x48A5), Flag(0xBC)),
-    ln.demon_castle_b1f_chest: LocationData(0x40F, rn.demon_castle, RomLoc(0x13, 0x48B6), Flag(0xBD)),
-    ln.demon_castle_b2f_chest: LocationData(0x410, rn.demon_castle, RomLoc(0x13, 0x48CE), Flag(0xBE)),
-    ln.demon_castle_b4f_chest: LocationData(0x411, rn.demon_castle, RomLoc(0x13, 0x48DF), Flag(0xBF)),
+    ln.demon_castle_b2f_chest: LocationData(0x40F, rn.demon_castle, RomLoc(0x13, 0x48B6), Flag(0xBD)),
+    ln.demon_castle_b4f_chest: LocationData(0x410, rn.demon_castle, RomLoc(0x13, 0x48CE), Flag(0xBE)),
+    ln.demon_castle_b6f_chest: LocationData(0x411, rn.demon_castle, RomLoc(0x13, 0x48DF), Flag(0xBF)),
     ln.demon_castle_boss_defeated: LocationData(0x412, rn.demon_castle, 0, Flag(0xC1)),
     # TODO: In Game Modification
     # ln.demon_castle_boss_gift: LocationData(0x413, rn.demon_castle, RomLoc(0x0F, 0x547E, Flag(0xC2)),
