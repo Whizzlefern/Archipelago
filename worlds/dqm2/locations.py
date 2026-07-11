@@ -62,7 +62,7 @@ location_data = {
     # Treetop
     ln.treetop_vase: LocationData(0x010, rn.treetop, RomLoc(0x13, 0x73EB), Flag(0x126)),
     ln.treetop_chest_1: LocationData(0x011, rn.treetop, RomLoc(0x13, 0x7DE1), Flag(0x13E)),
-    ln.treetop_chest_2: LocationData(0x012, rn.treetop, RomLoc(0x13, 0x7DF3), Flag(0x13F)),
+    ln.treetop_chest_2: LocationData(0x012, rn.treetop, RomLoc(0x13, 0x7DF2), Flag(0x13F)),
 
     # ==== Oasis World === #
     # Kalka
@@ -216,7 +216,7 @@ location_data = {
 
     # Demon Castle
     ln.demon_castle_1f_chest: LocationData(0x40E, rn.demon_castle, RomLoc(0x13, 0x48A5), Flag(0xBC)),
-    ln.demon_castle_b2f_chest: LocationData(0x40F, rn.demon_castle, RomLoc(0x13, 0x48B6), Flag(0xBD)),
+    ln.demon_castle_b2f_chest: LocationData(0x40F, rn.demon_castle, RomLoc(0x13, 0x48BD), Flag(0xBD)),
     ln.demon_castle_b4f_chest: LocationData(0x410, rn.demon_castle, RomLoc(0x13, 0x48CE), Flag(0xBE)),
     ln.demon_castle_b6f_chest: LocationData(0x411, rn.demon_castle, RomLoc(0x13, 0x48DF), Flag(0xBF)),
     ln.demon_castle_boss_defeated: LocationData(0x412, rn.demon_castle, 0, Flag(0xC1)),
