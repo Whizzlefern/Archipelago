@@ -85,6 +85,13 @@ class RandomizeStatGrowths(Toggle):
     display_name = "Randomize Stat Growths"
 
 
+class RandomizeBreedingResults(Toggle):
+    """
+    Randomize the results of breeding.
+    """
+    display_name = "Randomize Breeding Results"
+
+
 class RandomizeEncounters(DefaultOnToggle):
     """
     Randomize Encounters.
@@ -172,6 +179,7 @@ class DQM2Options(PerGameCommonOptions):
     better_join_rate: BetterJoinRate
     randomize_exp_growth: RandomizeEXPGrowth
     randomize_stat_growths: RandomizeStatGrowths
+    randomize_breeding_results: RandomizeBreedingResults
     randomize_encounters: RandomizeEncounters
     allowed_monsters: AllowedMonsters
     four_skills: FourSkills
@@ -193,7 +201,8 @@ dqm2_option_groups = [
         RandomizeLevelSkills,
         BetterJoinRate,
         RandomizeEXPGrowth,
-        RandomizeStatGrowths
+        RandomizeStatGrowths,
+        RandomizeBreedingResults
     ]),
 
     OptionGroup("Encounter Settings", [

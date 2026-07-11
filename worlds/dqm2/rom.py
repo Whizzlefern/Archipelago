@@ -1,4 +1,4 @@
-import os
+import os, copy
 from pkgutil import get_data
 from typing import TYPE_CHECKING, Sequence
 
@@ -61,7 +61,6 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
     patch.write_file("base_patch.bsdiff4",
                      get_data(__name__, f"{game_version}basepatch.bsdiff4"))
 
-
     if world.options.character == 0:
         write_bytes(patch, get_full_addr(0x07, 0x68C2), bytes([0x01]))
     else:
@@ -87,29 +86,8 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
             else:
                 continue
 
-    valid_monster_ids = []
     allowed_monsters = world.options.allowed_monsters.value
-
-    if len(allowed_monsters) == 0:
-        for monster in cd.core_monster_data.keys():
-            valid_monster_ids.append(cd.core_monster_data[monster]["id"])
-    else:
-        allowed_from_family = []
-        allowed_from_species = []
-
-        for value in allowed_monsters:
-            if value in ["Slime (Family)", "Dragon (Family)", "Beast", "Bird", "Plant", "Bug", "Devil", "Zombie", "Material", "Water", "???"]:
-                if value in ["Slime (Family)", "Dragon (Family)"]:
-                    value = value.split(" ")[0]
-                for monster in cd.species_data[value]["monsters"]:
-                    allowed_from_family.append(monster)
-            else:
-                if value in ["Slime (Species)", "Dragon (Species)"]:
-                    value = value.split(" ")[0]
-                allowed_from_species.append(value)
-
-        for monster in list(set(allowed_from_family + allowed_from_species)):
-            valid_monster_ids.append(cd.core_monster_data[monster]["id"])
+    valid_monster_ids = get_valid_monster_ids(allowed_monsters)
 
     current_core_options = {
         "Better Join Rate": world.options.better_join_rate,
@@ -125,11 +103,14 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         "EXP Multiplier": world.options.exp_multiplier
     }
 
+    if world.options.randomize_breeding_results:
+        randomize_breeding_results(world, patch, valid_monster_ids)
+
     randomize_core_monsters(world, patch, current_core_options)
     randomize_encounters(world, patch, current_encounter_options)
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
-    write_bytes(patch,0x3FFFF0, slot_name)
+    write_bytes(patch, 0x3FFFF0, slot_name)
 
     patch.write_file("token_data.bin", patch.get_token_binary())
     out_file_name = world.multiworld.get_out_file_name_base(world.player)
@@ -139,8 +120,37 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
 def get_full_addr(bank, addr) -> int:
     return ((bank - 0x1) * 0x4000) + addr
 
+
 def write_bytes(patch, address: int, data: Sequence[int] | int):
     patch.write_token(APTokenTypes.WRITE, address, data)
+
+
+def get_valid_monster_ids(allowed_monsters) -> list:
+    valid_ids = []
+
+    if len(allowed_monsters) == 0:
+        for monster in cd.core_monster_data.keys():
+            valid_ids.append(cd.core_monster_data[monster]["id"])
+    else:
+        allowed_from_family = []
+        allowed_from_species = []
+
+        for value in allowed_monsters:
+            if value in ["Slime (Family)", "Dragon (Family)", "Beast", "Bird", "Plant", "Bug", "Devil", "Zombie",
+                         "Material", "Water", "???"]:
+                if value in ["Slime (Family)", "Dragon (Family)"]:
+                    value = value.split(" ")[0]
+                for monster in cd.species_data[value]["monsters"]:
+                    allowed_from_family.append(monster)
+            else:
+                if value in ["Slime (Species)", "Dragon (Species)"]:
+                    value = value.split(" ")[0]
+                allowed_from_species.append(value)
+
+        for monster in list(set(allowed_from_family + allowed_from_species)):
+            valid_ids.append(cd.core_monster_data[monster]["id"])
+
+    return valid_ids
 
 
 def randomize_core_monsters(world: "DQM2World", patch, options) -> None:
@@ -195,14 +205,29 @@ def randomize_core_monsters(world: "DQM2World", patch, options) -> None:
         write_bytes(patch, current_byte, current_monster)
 
 
+def randomize_breeding_results(world: "DQM2World", patch, valid_ids) -> None:
+    byte_pairs = {0x3b116: 0x3b34e, 0x3ba51: 0x3bb83, 0x3bdd5: 0x3be83, 0x3be9b: 0x3bf75}
+    spacers = [0x3beb1, 0x3bec9, 0x3bee1, 0x3bef9, 0x3bf11, 0x3bf29, 0x3bf41, 0x3bf59, 0x3bf71]
+
+    for start, end in byte_pairs.items():
+        current_byte = copy.deepcopy(start)
+        while current_byte < end:
+            if current_byte in spacers:
+                current_byte += 0x2
+            result = world.random.choice(valid_ids).to_bytes(2, "little")
+            write_bytes(patch, current_byte, result)
+
+            current_byte += 0x2
+
+
 def randomize_encounters(world: "DQM2World", patch, options) -> None:
     skip_randomize = (pbe.all_unused +
-                      pbe.boss_recruits +       # Randomized with bosses
-                      [0x10, 0x11] +            # Skip ArmyAnt and MadGopher, for now
-                      pbe.medal_man_gifts +     # Requires script edit
-                      pbe.breeding_pairs +      # Requires script edit
-                      pbe.egg_gifts +           # Requires script edit
-                      pbe.summons)              # Requires unique case
+                      pbe.boss_recruits +  # Randomized with bosses
+                      [0x10, 0x11] +  # Skip ArmyAnt and MadGopher, for now
+                      pbe.medal_man_gifts +  # Requires script edit
+                      pbe.breeding_pairs +  # Requires script edit
+                      pbe.egg_gifts +  # Requires script edit
+                      pbe.summons)  # Requires unique case
 
     all_encounters = options["Encounters Data"]
 
