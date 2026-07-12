@@ -108,3 +108,6 @@ class DQM2World(World):
 
     def generate_output(self, output_directory: str) -> None:
         patch_rom(self, output_directory)
+
+    def fill_slot_data(self) -> dict[str, Any]:
+        return self.options.as_dict("goal", "character")
