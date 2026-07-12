@@ -1,5 +1,5 @@
 import os
-from typing import ClassVar
+from typing import ClassVar, Any
 
 import settings
 from BaseClasses import Item, ItemClassification, Tutorial
@@ -60,7 +60,7 @@ class DQM2World(World):
     item_name_to_id = lookup_name_to_id
     location_name_to_id = lookup_location_to_id
     
-    item_name_groups: item_name_groups
+    item_name_groups = item_name_groups
 
     web = DQM2WebWorld()
     origin_region_name = region_names.greatlog
