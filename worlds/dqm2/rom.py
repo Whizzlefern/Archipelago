@@ -106,7 +106,10 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
     if world.options.randomize_breeding_results:
         randomize_breeding_results(world, patch, valid_monster_ids)
 
-    randomize_core_monsters(world, patch, current_core_options)
+    if (current_core_options["Better Join Rate"] | current_core_options["Randomize Level Up Skills"] |
+            current_core_options["Randomize EXP Growth"] | current_core_options["Randomize Stat Growths"]):
+        randomize_core_monsters(world, patch, current_core_options)
+
     randomize_encounters(world, patch, current_encounter_options)
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
@@ -250,6 +253,8 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
 
     ### o = Skills need to be look at
 
+    overworld_bosses = [0x1a, 0x1c, 0x182, 0x190]
+
     for encounter in all_encounters:
         if encounter in skip_randomize:
             continue
@@ -258,6 +263,9 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
         current_encounter = create_encounter(world, encounter, options)
         if encounter in pbe.boss_joins:
             create_boss_recruit(world, patch, encounter, current_encounter, options["Encounters Data"])
+        if encounter in overworld_bosses:
+            mon_id = current_encounter[0:2]
+            edit_overworld_boss(patch, encounter, mon_id)
         #
         #
         #
@@ -437,72 +445,15 @@ def create_boss_recruit(world: "DQM2World", patch, encounter, current_encounter,
     current_recruit = bytes(current_recruit)
     write_bytes(patch, current_byte, current_recruit)
 
-# for encounter in encounters_data:
-#
-#     if encounter in skip_randomize:
-#         continue
-#     elif encounter in [0x10, 0x11]:
-#         # Don't randomize ArmyAnt, MadGopher, for now
-#         continue
-#     elif encounter == 0x1a:
-#         # Make boss water type to avoid getting locked
-#         water_ids = list(range(0x13c, 0x15c))
-#         monster = world.random.choice(water_ids).to_bytes(2, "little")
-#     else:
-#         monster = world.random.choice(valid_ids).to_bytes(2, "little")
-#
-#     if encounter in boss_joins:
-#         if encounter == 0x07:
-#             write_bytes(patch, encounters_data[0x08]["rom_addr"], monster)
-#         elif encounter == 0x1a:
-#             write_bytes(patch, encounters_data[0x1b]["rom_addr"], monster)
-#             write_bytes(patch, get_full_addr(0x69, 0x6077), monster)
-#         elif encounter == 0x182:
-#             write_bytes(patch, encounters_data[0x183]["rom_addr"], monster)
-#             for address in  [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
-#                 full_addr = get_full_addr(0x69, address)
-#                 write_bytes(patch, full_addr, monster)
-#         elif encounter == 0x190:
-#             write_bytes(patch, encounters_data[0x1af]["rom_addr"], monster)
-#             write_bytes(patch, get_full_addr(0x69, 0x5e2e), monster)
-#
-#         elif encounter == 0x1ab:
-#             write_bytes(patch, encounters_data[0x1ac]["rom_addr"], monster)
-#
-#     current_byte = encounters_data[encounter]["rom_addr"]
-#     write_bytes(patch, current_byte, monster)
-#
-#     if world.options.better_join_rate:
-#         if encounter in recruitable_locations:
-#             current_byte += 0x08
-#             better_join = list(range(0x01, 0x04))
-#             join = world.random.choice(better_join).to_bytes(1)
-#             write_bytes(patch, current_byte, join)
 
-# Canal Boss Monster Sprite
-# 69/7c37:
-#     ??
-#     ??
-#
-# # Den of Canal Boss? xd
-# 69/7b69
-# 69/7d48
-# 69/7d84
-# 69/7d8F
-# 69/7d9b
-# 69/7da6
-
-# Pirate Boss Sprite
-# 69/63a9:
-#     ??
-#     ??
-#
-# # Ocean Boss Sprite
-# 69/5e2e:
-#     ??
-#     ??
-#
-# # Cape Boss Sprite
-# 69/6077:
-#     ??
-#     ??
+def edit_overworld_boss(patch, encounter, mon_id) -> None:
+    if encounter == 0x1a:
+        write_bytes(patch, get_full_addr(0x69, 0x6077), mon_id)
+    elif encounter == 0x1c:
+        write_bytes(patch, get_full_addr(0x69, 0x63a9), mon_id)
+    elif encounter == 0x182:
+        for address in [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
+            full_addr = get_full_addr(0x69, address)
+            write_bytes(patch, full_addr, mon_id)
+    elif encounter == 0x190:
+        write_bytes(patch, get_full_addr(0x69, 0x5e2e), mon_id)
