@@ -50,6 +50,7 @@ nest = "Mad Condor Nest"
 small_cave = "Small Cave"
 wind_tower = "Wind Tower"
 graveyard = "Graveyard"
+hitano = "Hitano"
 hitano_castle = "Hitano Castle"
 demon_castle = "Demon Castle"
 

@@ -60,7 +60,8 @@ sky_main_to_nest = "Sky - Main to Nest"
 sky_main_to_small_cave = "Sky - Main to Small Cave"
 sky_main_to_wind_tower = "Sky - Main to Wind Tower"
 sky_main_to_graveyard = "Sky - Main to Graveyard"
-sky_main_to_hitano_castle = "Sky - Main to Hitano Castle"
+sky_main_to_hitano = "Sky - Main to Hitano"
+hitano_to_hitano_castle = "Sky - Main to Hitano Castle"
 hitano_castle_to_demon_castle = "Hitano Castle to Demon Castle"
 
 # From Limbo

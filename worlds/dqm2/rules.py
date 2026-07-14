@@ -80,7 +80,7 @@ def set_all_entrance_rules(world: DQM2World) -> None:
     
     world.set_rule(world.get_entrance(entrance_names.sky_main_to_wind_tower), HAS_SKY_SHIELD)
     world.set_rule(world.get_entrance(entrance_names.sky_main_to_graveyard), HAS_SKY_SHIELD)
-    world.set_rule(world.get_entrance(entrance_names.hitano_castle_to_demon_castle), HAS_HEAVEN_GEAR)
+    world.set_rule(world.get_entrance(entrance_names.hitano_to_hitano_castle), HAS_HEAVEN_GEAR)
     
     # Limbo World
     can_enter_darck_manor = HasAll(item_names.tidal_bell, item_names.har_mirror, item_names.sky_shield)

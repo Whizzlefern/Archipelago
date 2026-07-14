@@ -68,6 +68,7 @@ def create_regions(world: DQM2World) -> None:
     small_cave_region = create_region(world, rn.small_cave)
     wind_tower_region = create_region(world, rn.wind_tower)
     graveyard_region = create_region(world, rn.graveyard)
+    hitano_region = create_region(world, rn.hitano)
     hitano_castle_region = create_region(world, rn.hitano_castle)
     demon_castle_region = create_region(world, rn.demon_castle)
     
@@ -119,6 +120,7 @@ def create_regions(world: DQM2World) -> None:
         small_cave_region,
         wind_tower_region,
         graveyard_region,
+        hitano_region,
         hitano_castle_region,
         demon_castle_region,
         limbo_region,
@@ -227,7 +229,8 @@ def connect_regions(world: DQM2World) -> None:
     connect(world, world.player, en.sky_main_to_small_cave, rn.sky_world_main, rn.small_cave)
     connect(world, world.player, en.sky_main_to_wind_tower, rn.sky_world_main, rn.wind_tower)
     connect(world, world.player, en.sky_main_to_graveyard, rn.sky_world_main, rn.graveyard)
-    connect(world, world.player, en.sky_main_to_hitano_castle, rn.sky_world_main, rn.hitano_castle)
+    connect(world, world.player, en.sky_main_to_hitano, rn.sky_world_main, rn.hitano)
+    connect(world, world.player, en.hitano_to_hitano_castle, rn.hitano, rn.hitano_castle)
     connect(world, world.player, en.hitano_castle_to_demon_castle, rn.hitano_castle, rn.demon_castle)
     
     # Limbo World
