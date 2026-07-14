@@ -121,7 +121,11 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
 
 
 def get_full_addr(bank, addr) -> int:
-    return ((bank - 0x1) * 0x4000) + addr
+    return ((bank - 0x1) * 0x4000) + addr if bank > 0x00 else addr
+
+
+def get_bank_addr(addr) -> list:
+    return [(addr // 0x4000), ((addr % 0x4000) + 0x4000)] if addr > 0x3FFF else [0x00, addr]
 
 
 def write_bytes(patch, address: int, data: Sequence[int] | int):
