@@ -47,8 +47,7 @@ location_data = {
     ln.housing_vase: LocationData(0x008, rn.residential, RomLoc(0x13, 0x7A23), Flag(0x130)),
 
     # Shops
-    # TODO: In Game Modification
-    #    ln.rare_key_shelf: LocationData(0x009, rn.shops, 0, Flag(0x11E)),
+    ln.rare_key_shelf: LocationData(0x009, rn.shops, 0, Flag(0x11E)),
     ln.key_shop_vase: LocationData(0x00A, rn.shops, RomLoc(0x13, 0x7A04), Flag(0x132)),
 
     # Castle
@@ -92,8 +91,7 @@ location_data = {
     ln.yold_barrel: LocationData(0x200, rn.yold, RomLoc(0x04, 0x5A5A), Flag(0x62)),
 
     # Polona
-    # TODO: Disabled for now since it prevents picking up items from the world map if I mess with this ???
-    # ln.polona_dance: LocationData(0x201, rn.polona, RomLoc(0x73, 0x6BEE), Flag(0x6E)),
+    ln.polona_dance: LocationData(0x201, rn.polona, RomLoc(0x73, 0x6BEE), Flag(0x6E)),
 
     # Mermaid World
     ln.mermaid_queen: LocationData(0x202, rn.mermaid, RomLoc(0x04, 0x5EA5), Flag(0x5E)),
@@ -147,10 +145,9 @@ location_data = {
     ln.norden_vase: LocationData(0x301, rn.norden, RomLoc(0x13, 0x4C85), Flag(0x1E6)),
 
     # Spirit's Spring
-    # TODO: In Game Modification
-    # ln.spirit_spring_chest: LocationData(0x302, rn.spirit_spring, RomLoc(0x13, 0x5883), Flag(0x80)),
-    # ln.spirit_spring_boss_defeated (0x1E4) 0x303
-    # ln.spirit_spring_sky_shield    (0x1E5) 0x304
+    ln.spirit_spring_chest: LocationData(0x302, rn.spirit_spring, 0, Flag(0x80)), # RomLoc(0x13, 0x5884)
+    ln.spirit_spring_boss_defeated: LocationData(0x303, rn.spirit_spring, 0, Flag(0x1E4)),
+    ln.spirit_spring_sky_shield: LocationData(0x304, rn.spirit_spring, 0, Flag(0x1E5)),
 
     # Gold Mine
     ln.gold_mine_chest: LocationData(0x305, rn.gold_mine, RomLoc(0x13, 0x5071), Flag(0x84)),
@@ -163,16 +160,14 @@ location_data = {
     ln.westania_castle_boss_defeated: LocationData(0x308, rn.westania_castle, 0, Flag(0x9D)),
 
     # Southern Forest
-    # TODO: In Game Modification
-    # ln.southern_forest_soul: LocationData(0x309, rn.southern_forest, RomLoc(0x0F, 0x70D8), Flag(0x9B)),
+    ln.southern_forest_soul: LocationData(0x309, rn.southern_forest, 0, Flag(0x9B)), # RomLoc(0x0F, 0x70D8) this seems.. wrong?
 
     # Estria
     ln.estria_boss_defeated: LocationData(0x30A, rn.estria, 0, Flag(0x1E2)),
 
     # Eastern Mountains
-    # TODO: In Game Modification
-    # ln.eastern_mountain_sleep_herb: LocationData(0x30B, rn.eastern_mountain, RomLoc(0x13, 0x583D), Flag(0x9F)),
-    # ln.eastern_mountain_chest (0x1E0) 0x30C
+    ln.eastern_mountain_sleep_herb: LocationData(0x30B, rn.eastern_mountain, 0, Flag(0x9F)), # RomLoc(0x13, 0x583D)
+    ln.eastern_mountain_chest: LocationData(0x30C, rn.eastern_mountain, RomLoc(0x13, 0x5860), Flag(0x1E0)),
 
     # Lake Tower
     ln.lake_tower_1f_right_chest: LocationData(0x30D, rn.lake_tower, RomLoc(0x13, 0x58B1), Flag(0x1E9)),
@@ -186,14 +181,12 @@ location_data = {
 
     # ==== Sky World ==== #
     # Fhunt
-    # TODO: In Game Modification
-    # ln.fhunt_gravestone: LocationData(0x400, rn.fhunt, RomLoc(0x13, 0x4351), Flag(0xA7)),
+    ln.fhunt_gravestone: LocationData(0x400, rn.fhunt, 0, Flag(0xA7)), # RomLoc(0x13, 0x4351)
 
     # Sage Tower
     ln.sage_tower_1f_chest: LocationData(0x401, rn.sage_tower, RomLoc(0x13, 0x4301), Flag(0xA1)),
     ln.sage_tower_4f_chest_1: LocationData(0x402, rn.sage_tower, RomLoc(0x13, 0x4319), Flag(0xA2)),
-    # TODO: In Game Modification
-    # ln.sage_tower_4f_chest_2: LocationData(0x403, rn.sage_tower, 0, Flag(0xA3)),
+    ln.sage_tower_4f_chest_2: LocationData(0x403, rn.sage_tower, RomLoc(0x13, 0x432A), Flag(0xA3)),
 
     # Mad Condor's Nest
     ln.nest_boss_defeated: LocationData(0x404, rn.nest, 0, Flag(0xA8)),

@@ -116,6 +116,7 @@ def set_all_location_rules(world: DQM2World) -> None:
     # TODO: Do these actually require Sky World?
     world.set_rule(world.get_location(location_names.treetop_chest_1), Has("Sky World Complete"))
     world.set_rule(world.get_location(location_names.treetop_chest_2), Has("Sky World Complete"))
+    world.set_rule(world.get_location(location_names.rare_key_shelf), Has("Ice World Complete"))
 
     # Canal
     world.set_rule(world.get_location(location_names.canal_ne_vase_1), HAS_TIDAL_BELL)
@@ -141,6 +142,9 @@ def set_all_location_rules(world: DQM2World) -> None:
                            CanReachLocation(location_names.westania_castle_boss_defeated) & \
                            CanReachLocation(location_names.estria_boss_defeated)
     world.set_rule(world.get_location("Ice World Complete"), can_finish_ice_world)
+
+    # Norden Castle
+    world.set_rule(world.get_location(location_names.norden_boss_defeated), HAS_HAR_MIRROR)
 
     # Westania Castle
     world.set_rule(world.get_location(location_names.westania_castle_boss_defeated), HAS_YUNA_SOUL)
