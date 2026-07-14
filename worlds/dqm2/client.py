@@ -95,7 +95,7 @@ class DQM2Client(BizHawkClient):
             world_completions = read_result[5] + read_result[6]
             
             # Only checks for Darck, update once more goals are available
-            if (flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x01 == 0x01) and not ctx.finished_game:
+            if (flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x02 == 0x02) and not ctx.finished_game:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 ctx.finished_game = True
 
