@@ -99,18 +99,23 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
     current_encounter_options = {
         "Encounters Data": pbe.cobi_encounters_data if game_version == "cobi" else pbe.tara_encounters_data,
         "Valid IDs": valid_monster_ids,
-        "Four Skills": world.options.four_skills,
+        "Randomize Encounters": world.options.randomize_encounters,
+        "Randomize Encounter Skills": world.options.randomize_encounter_skills,
+        "Randomize Encounter Stats": world.options.randomize_encounter_stats,
         "EXP Multiplier": world.options.exp_multiplier
     }
 
     if world.options.randomize_breeding_results:
         randomize_breeding_results(world, patch, valid_monster_ids)
 
-    if (current_core_options["Better Join Rate"] | current_core_options["Randomize Level Up Skills"] |
-            current_core_options["Randomize EXP Growth"] | current_core_options["Randomize Stat Growths"]):
+    core_randomized = (current_core_options["Better Join Rate"] | current_core_options["Randomize Level Up Skills"] |
+            current_core_options["Randomize EXP Growth"] | current_core_options["Randomize Stat Growths"])
+    if core_randomized:
         randomize_core_monsters(world, patch, current_core_options)
 
-    randomize_encounters(world, patch, current_encounter_options)
+    encounters_randomized = (current_encounter_options["Randomize Encounters"] | current_encounter_options["Randomize Encounter Skills"] | current_encounter_options["Randomize Encounter Stats"] | current_encounter_options["EXP Multiplier"] > 100)
+    if encounters_randomized:
+        randomize_encounters(world, patch, current_encounter_options)
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch, 0x3FFFF0, slot_name)
@@ -237,6 +242,11 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
                       pbe.summons)  # Requires unique case
 
     all_encounters = options["Encounters Data"]
+    valid_ids = options["Valid IDs"]
+    random_monsters = options["Randomize Encounters"]
+    random_skills = options["Randomize Encounter Skills"]
+    random_stats = options["Randomize Encounter Stats"]
+    exp_multiplier = options["EXP Multiplier"]
 
     ### PROGRESS CHECKING ###
     ### All 684 Encounters include
@@ -258,13 +268,13 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
     ### o = Skills need to be look at
 
     overworld_bosses = [0x1a, 0x1c, 0x182, 0x190, 0x32, 0x44, 0x199, 0x64, 0x1A6, 0x1AB]
-    
+
     for encounter in all_encounters:
         if encounter in skip_randomize:
             continue
 
         current_byte = all_encounters[encounter]["rom_addr"]
-        current_encounter = create_encounter(world, encounter, options)
+        current_encounter = create_encounter(world, encounter, all_encounters, valid_ids, random_monsters, random_skills, random_stats, exp_multiplier)
         if encounter in pbe.boss_joins:
             create_boss_recruit(world, patch, encounter, current_encounter, options["Encounters Data"])
         if encounter in overworld_bosses:
@@ -277,12 +287,10 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
         write_bytes(patch, current_byte, current_encounter)
 
 
-def create_encounter(world: "DQM2World", encounter, options) -> bytes:
+def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, random_monsters, random_skills, random_stats, exp_multiplier) -> bytes:
     created_encounter = bytearray()
 
-    current_encounter = options["Encounters Data"][encounter]
-    valid_ids = options["Valid IDs"]
-    exp_multiplier = options["EXP Multiplier"]
+    current_encounter = all_encounters[encounter]
 
     encounter_info = {
         "World": current_encounter["world"],
@@ -298,35 +306,56 @@ def create_encounter(world: "DQM2World", encounter, options) -> bytes:
         scaling = ""
 
     # Monster ID
-    if encounter == 0x1a:
-        # TODO: Temporarily limit Cape Cave boss to water type to prevent soft locks
-        valid_ids = list(range(0x13c, 0x15c))
+    if random_monsters:
+        mon_id = get_mon_id(world, encounter, valid_ids)
+    else:
+        mon_id = current_encounter["id"].to_bytes(2, "little")
 
-    encounter_id = world.random.choice(valid_ids).to_bytes(2, "little")
-
-    created_encounter.extend(encounter_id)
+    created_encounter.extend(mon_id)
 
     # Skills
-    if options["Four Skills"]:
-        sample_size = 4
-    else:
-        if scaling != "":
-            sample_size = world.random.choice(pbe.encounter_ranges[scaling]["num_skills"])
+    created_skills = bytearray()
+    if random_skills:
+        if random_skills == 2:
+            sample_size = 4
         else:
-            sample_size = world.random.choice([0, 1, 2, 3, 4])
+            if scaling != "":
+                sample_size = world.random.choice(pbe.encounter_ranges[scaling]["num_skills"])
+            else:
+                sample_size = world.random.choice([0, 1, 2, 3, 4])
+        created_skills = create_skills(world, encounter, sample_size, encounter_info)
+    else:
+        for skill in ["skill_1", "skill_2", "skill_3", "skill_4"]:
+            created_skills.extend(current_encounter[skill].to_bytes(2, "little"))
 
-    created_skills = create_skills(world, encounter, sample_size, encounter_info)
     created_encounter.extend(created_skills)
 
     # Stats
-    # TODO: Band-aid give Slash a boost
-    if encounter == 0x1:
-        print(0x1)
-        scaling = "Oasis - Overworld"
-    created_stats = create_stats(world, current_encounter, scaling, exp_multiplier)
+    created_stats = bytearray()
+    if random_stats:
+        # Give slash a little boost
+        if encounter == 0x1:
+            scaling = "Oasis - Overworld"
+        created_stats = create_stats(world, current_encounter, scaling, exp_multiplier)
+    else:
+        for value in ["exp", "join", "level", "hp", "mp", "atk", "def", "agi", "int", "charge", "defense", "motivation", "mixed"]:
+            if value == "exp" and exp_multiplier > 100:
+                current_value = min(int(current_encounter[value] * (exp_multiplier / 100)), 0xFFFF)
+            else:
+                current_value = current_encounter[value]
+            current_value = current_value.to_bytes(2, "little")
+            created_stats.extend(current_value)
+
     created_encounter.extend(created_stats)
 
     return bytes(created_encounter)
+
+
+def get_mon_id(world: "DQM2World", encounter, valid_ids) -> bytes:
+    # TODO: Temporarily limit Cape Cave boss to water type to prevent soft locks
+    if encounter == 0x1a:
+        valid_ids = list(range(0x13c, 0x15c))
+    return world.random.choice(valid_ids).to_bytes(2, "little")
 
 
 def create_skills(world: "DQM2World", encounter, sample_size, encounter_info) -> bytearray:
@@ -365,7 +394,8 @@ def create_skills(world: "DQM2World", encounter, sample_size, encounter_info) ->
                 dance_check = True
 
         if not dance_check:
-            del skills[-1]
+            if len(skills) > 0:
+                del skills[-1]
             skills.append(world.random.choice(dance_moves))
 
     while len(skills) < 4:

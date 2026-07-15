@@ -95,7 +95,6 @@ class RandomizeBreedingResults(Toggle):
 class RandomizeEncounters(DefaultOnToggle):
     """
     Randomize Encounters.
-    *** Not currently implemented, all monsters are randomized always with no restrictions.
     """
     display_name = "Randomize Encounters"
 
@@ -150,12 +149,26 @@ class AllowedMonsters(OptionSet):
     default = []
 
 
-class FourSkills(Toggle):
+class RandomizeEncounterSkills(Choice):
     """
-    Forces all encounters to have four.
-    This means monsters that join you will be stronger, but so will your enemies.
+    Randomizes Encounter Skills.
+
+    Off = Vanilla skills
+    On = Randomizes skills
+    Four Skills = Randomizes and forces all encounters to have four skills
     """
-    display_name = "Force Four Skills"
+    display_name = "Randomize Encounter Skills"
+    option_off = 0
+    option_on = 1
+    option_four_skills = 2
+    default = 1
+
+
+class RandomizeEncounterStats(DefaultOnToggle):
+    """
+    Randomizes Encounter Stats.
+    """
+    display_name = "Randomize Encounter Stats"
 
 
 class EXPMultiplier(Range):
@@ -182,7 +195,8 @@ class DQM2Options(PerGameCommonOptions):
     randomize_breeding_results: RandomizeBreedingResults
     randomize_encounters: RandomizeEncounters
     allowed_monsters: AllowedMonsters
-    four_skills: FourSkills
+    randomize_encounter_skills: RandomizeEncounterSkills
+    randomize_encounter_stats: RandomizeEncounterStats
     exp_multiplier: EXPMultiplier
 
 
@@ -208,7 +222,8 @@ dqm2_option_groups = [
     OptionGroup("Encounter Settings", [
         RandomizeEncounters,
         AllowedMonsters,
-        FourSkills,
+        RandomizeEncounterSkills,
+        RandomizeEncounterStats,
         EXPMultiplier
     ])
 
