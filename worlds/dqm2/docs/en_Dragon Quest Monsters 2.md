@@ -25,6 +25,7 @@ Monsters:
 - EXP Growth
 - Stat Growths
 - Encounters
+- Breeding Results
 
 ## What other changes are made to the game?
 
@@ -39,12 +40,12 @@ A lot, but most will take a while to do. Hopefully you'll see these listed above
 These are not ordered in any specific way.
 
 - Randomize Keys
+- Random World Keys in the pool
 - Scaling World difficulty
 - Additional goals
 - Access storage from anywhere
 - Quest items no longer are required in your inventory
 - Text modification
-- Randomize breeding results
 - Sprite customization (in-game sprites only, to start)
 - Fully open GreatLog from the start
 - Shortened/removed cut scenes
@@ -53,6 +54,5 @@ These are not ordered in any specific way.
 
 ## Current Quirks
 
-- Many locations that are from NPCs/Cut Scenes are not currently randomized. This can allow you to break logic if they give quest items.
-- Monsters are *always* randomized.
+- Items obtained from most NPCs and Locations will display the vanilla item in the dialogue. This will be fixed in the future.
 - No post game content, unless you `!getitem` their keys. Items are not currently randomized, but the monsters are.
