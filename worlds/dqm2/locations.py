@@ -69,7 +69,7 @@ location_data = {
 
     # Asiya
     ln.asiya_vase: LocationData(0x101, rn.asiya, RomLoc(0x04, 0x644B), Flag(0x47)),
-    ln.asiya_prisoner: LocationData(0x102, rn.asiya, RomLoc(0x73, 0x6EAB), Flag(0x57)),
+    ln.asiya_prisoner: LocationData(0x102, rn.asiya, 0, Flag(0x57)), # RomLoc(0x73, 0x6EAB)
 
     # Canal
     ln.canal_nw_vase_1: LocationData(0x103, rn.canal, RomLoc(0x04, 0x6651), Flag(0x4B)),
