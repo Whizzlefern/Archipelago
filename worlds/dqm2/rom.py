@@ -125,7 +125,7 @@ def get_full_addr(bank, addr) -> int:
 
 
 def get_bank_addr(addr) -> list:
-    return [(addr // 0x4000), ((addr % 0x4000) + 0x4000)] if addr > 0x3FFF else [0x00, addr]
+    return [(addr // 0x4000), ((addr % 0x4000) + 0x4000)]
 
 
 def write_bytes(patch, address: int, data: Sequence[int] | int):
@@ -257,8 +257,8 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
 
     ### o = Skills need to be look at
 
-    overworld_bosses = [0x1a, 0x1c, 0x182, 0x190]
-
+    overworld_bosses = [0x1a, 0x1c, 0x182, 0x190, 0x32, 0x44, 0x199, 0x64, 0x1A6, 0x1AB]
+    
     for encounter in all_encounters:
         if encounter in skip_randomize:
             continue
@@ -452,12 +452,36 @@ def create_boss_recruit(world: "DQM2World", patch, encounter, current_encounter,
 
 def edit_overworld_boss(patch, encounter, mon_id) -> None:
     if encounter == 0x1a:
+        # Cape Cave
         write_bytes(patch, get_full_addr(0x69, 0x6077), mon_id)
     elif encounter == 0x1c:
+        # Ghost Ship
         write_bytes(patch, get_full_addr(0x69, 0x63a9), mon_id)
     elif encounter == 0x182:
+        # Canal
         for address in [0x7c37, 0x7b69, 0x7d48, 0x7d84, 0x7d8f, 0x7d9b, 0x7da6]:
             full_addr = get_full_addr(0x69, address)
             write_bytes(patch, full_addr, mon_id)
     elif encounter == 0x190:
+        # Pirate Ocean
         write_bytes(patch, get_full_addr(0x69, 0x5e2e), mon_id)
+    elif encounter == 0x32:
+        # Gold Mine
+        write_bytes(patch, get_full_addr(0x69, 0x56cd), mon_id)
+    elif encounter == 0x44:
+        # Estria Castle
+        write_bytes(patch, get_full_addr(0x69, 0x5d1b), mon_id)
+    elif encounter == 0x199:
+        # Norden Castle
+        write_bytes(patch, get_full_addr(0x69, 0x5331), mon_id)
+    elif encounter == 0x64:
+        # Graveyard
+        write_bytes(patch, get_full_addr(0x69, 0x4fd8), mon_id)
+    elif encounter == 0x1A6:
+        # Small Cave
+        write_bytes(patch, get_full_addr(0x69, 0x4e4d), mon_id)
+    elif encounter == 0x1AB:
+        # Nest
+        for address in [0x4acb, 0x4c24]:
+            full_addr = get_full_addr(0x69, address)
+            write_bytes(patch, full_addr, mon_id)
