@@ -132,6 +132,9 @@ def set_all_location_rules(world: DQM2World) -> None:
     world.set_rule(world.get_location(location_names.cape_ne_chest_3), HAS_TIDAL_BELL)
     world.set_rule(world.get_location(location_names.cape_mid_chest), HAS_TIDAL_BELL)
 
+    # Mermaid World
+    world.set_rule(world.get_location(location_names.mermaid_queen), HAS_TIDAL_BELL)
+
     # Volcano
     world.set_rule(world.get_location(location_names.volcano_b2f_s_chest_1), HAS_SKY_SHIELD)
     world.set_rule(world.get_location(location_names.volcano_b2f_s_chest_2), HAS_SKY_SHIELD)
