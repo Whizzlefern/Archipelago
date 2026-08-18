@@ -326,7 +326,7 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
         created_skills = create_skills(world, encounter, sample_size, encounter_info)
     else:
         for skill in ["skill_1", "skill_2", "skill_3", "skill_4"]:
-            created_skills.extend(current_encounter[skill].to_bytes(2, "little"))
+            created_skills.extend(bytes([current_encounter[skill]]))
 
     created_encounter.extend(created_skills)
 
@@ -343,7 +343,10 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
                 current_value = min(int(current_encounter[value] * (exp_multiplier / 100)), 0xFFFF)
             else:
                 current_value = current_encounter[value]
-            current_value = current_value.to_bytes(2, "little")
+            if value in ["join", "level", "charge", "defense", "motivation", "mixed"]:
+                current_value = bytes([current_value])
+            else:
+                current_value = current_value.to_bytes(2, "little")
             created_stats.extend(current_value)
 
     created_encounter.extend(created_stats)
