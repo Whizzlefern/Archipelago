@@ -176,7 +176,7 @@ location_data = {
     ln.lake_tower_2f_right_chest: LocationData(0x310, rn.lake_tower, RomLoc(0x13, 0x58E4), Flag(0x1EC)),
     ln.lake_tower_4f_left_chest: LocationData(0x311, rn.lake_tower, RomLoc(0x13, 0x58F5), Flag(0x1ED)),
     ln.lake_tower_4f_right_chest: LocationData(0x312, rn.lake_tower, RomLoc(0x13, 0x5906), Flag(0x1EE)),
-    ln.lake_tower_5f_left_chest: LocationData(0x313, rn.lake_tower, RomLoc(0x13, 0x5817), Flag(0x1EF)),
+    ln.lake_tower_5f_left_chest: LocationData(0x313, rn.lake_tower, RomLoc(0x13, 0x5917), Flag(0x1EF)),
     ln.lake_tower_5f_right_chest: LocationData(0x314, rn.lake_tower, RomLoc(0x13, 0x5928), Flag(0x1F0)),
 
     # ==== Sky World ==== #
