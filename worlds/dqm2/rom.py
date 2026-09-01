@@ -2,6 +2,7 @@ import os, copy
 from pkgutil import get_data
 from typing import TYPE_CHECKING, Sequence
 
+from settings import get_settings
 from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
 from .data import encounters_data as pbe, monster_data as cd
 from .locations import location_data
@@ -119,6 +120,18 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch, 0x3FFFF0, slot_name)
+
+    sprite = get_settings()["dqm2_options"][f"{game_version}_sprite"]
+    sprite_dict = {
+        "cobi": 0x00, "tara": 0x01, "warubou": 0x02, "kameha": 0x03, "dad": 0x04, "mom": 0x05
+    }
+
+    try:
+        sprite_value = sprite_dict[sprite]
+    except KeyError:
+        sprite_value = sprite_dict[game_version]
+    finally:
+        write_bytes(patch, get_full_addr(0x04, 0x4b43), bytes([sprite_value]))
 
     patch.write_file("token_data.bin", patch.get_token_binary())
     out_file_name = world.multiworld.get_out_file_name_base(world.player)

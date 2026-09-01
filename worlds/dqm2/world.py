@@ -27,8 +27,24 @@ class DQM2Settings(settings.Group):
         copy_to = "Dragon Warrior Monsters 2 - Tara's Adventure (USA) (SGB Enhanced) (GB Compatible).gbc"
         md5s = [TaraProcedurePatch.hash]
 
+    class CobiSprite(str):
+        """
+        The name of the sprite to use for Cobi's version.
+        Putting "cobi" as a value uses the default game sprite.
+        Other Valid values are: "tara", "warubou", "kameha", "dad", "mom"
+        """
+
+    class TaraSprite(str):
+        """
+        The name of the sprite to use for Tara's version.
+        Putting "tara" as a value uses the default game sprite.
+        Other Valid values are: "cobi", "warubou", "kameha", "dad", "mom"
+        """
+
     cobi_rom_file: CobiRomFile = CobiRomFile(CobiRomFile.copy_to)
     tara_rom_file: TaraRomFile = TaraRomFile(TaraRomFile.copy_to)
+    cobi_sprite: CobiSprite | str = "cobi"
+    tara_sprite: CobiSprite | str = "tara"
 
 
 class DQM2WebWorld(WebWorld):
