@@ -355,9 +355,6 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
 
 
 def get_mon_id(world: "DQM2World", encounter, valid_ids) -> bytes:
-    # TODO: Temporarily limit Cape Cave boss to water type to prevent soft locks
-    if encounter == 0x1a:
-        valid_ids = list(range(0x13c, 0x15c))
     return world.random.choice(valid_ids).to_bytes(2, "little")
 
 
@@ -387,19 +384,6 @@ def create_skills(world: "DQM2World", encounter, sample_size, encounter_info) ->
         valid_skills += cd.banned_on_boss
 
     skills = world.random.sample(valid_skills, sample_size)
-
-    # Ensure dance move on Cape Boss
-    if encounter == 0x1a:
-        dance_moves = [0x76, 0x78, 0x7a, 0x7c, 0x7d]
-        dance_check: bool = False
-        for dance in dance_moves:
-            if dance in skills:
-                dance_check = True
-
-        if not dance_check:
-            if len(skills) > 0:
-                del skills[-1]
-            skills.append(world.random.choice(dance_moves))
 
     while len(skills) < 4:
         skills.append(0xFF)
