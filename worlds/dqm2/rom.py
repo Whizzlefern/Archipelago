@@ -501,12 +501,14 @@ def edit_overworld_boss(patch, encounter, mon_id) -> None:
     elif encounter == 0x32:
         # Gold Mine
         write_bytes(patch, get_full_addr(0x69, 0x56cd), mon_id)
+        write_bytes(patch, get_full_addr(0x69, 0x56ef), mon_id)
     elif encounter == 0x44:
         # Estria Castle
         write_bytes(patch, get_full_addr(0x69, 0x5d1b), mon_id)
     elif encounter == 0x199:
         # Norden Castle
         write_bytes(patch, get_full_addr(0x69, 0x5331), mon_id)
+        write_bytes(patch, get_full_addr(0x69, 0x5353), mon_id)
     elif encounter == 0x64:
         # Graveyard
         write_bytes(patch, get_full_addr(0x69, 0x4fd8), mon_id)
