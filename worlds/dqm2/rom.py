@@ -1,9 +1,9 @@
 import os, copy
 from pkgutil import get_data
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence
 
 from settings import get_settings
-from worlds.Files import APProcedurePatch, APTokenMixin, APTokenTypes
+from worlds.Files import APPatchExtension, APProcedurePatch, APTokenMixin, APTokenTypes
 from .data import encounters_data as pbe, monster_data as cd
 from .locations import location_data
 
@@ -14,6 +14,65 @@ DQM2_COBI_HASH = "f71ac6ac4bb335f59bfd2b594d47ab49"
 DQM2_TARA_HASH = "8e79dcdee0e15ef069b3f376a0fee37d"
 
 
+class RomData:
+    def __init__(self, file: bytes, name: Optional[str] = None) -> None:
+        self.file = bytearray(file)
+        self.name = name
+
+    def read_byte(self, address: int) -> int:
+        return self.file[address]
+
+    def read_bytes(self, address: int, length: int) -> bytearray:
+        return self.file[address:address + length]
+
+    def write_byte(self, address: int, value: int) -> None:
+        self.file[address] = value
+
+    def write_bytes(self, address: int, values: Sequence[int]) -> None:
+        self.file[address: address + len(values)] = values
+
+    def update_checksum(self) -> None:
+        checksum = 0
+        for byte in self.read_bytes(0x00, 0x14e):
+            checksum += byte
+        for byte in self.read_bytes(0x150, 0x3fffff):
+            checksum += byte
+        checksum &= 0xffff
+        self.write_bytes(0x14e, [(checksum >> 8) & 0xFF, checksum & 0xFF])
+
+    def get_bytes(self) -> bytes:
+        return bytes(self.file)
+
+
+class DQM2PatchExtensions(APPatchExtension):
+    game = "Dragon Quest Monsters 2"
+
+    @staticmethod
+    def apply_post_patch(_: APProcedurePatch, rom: bytes) -> bytes:
+        rom_data = RomData(rom)
+
+        header_byte = rom_data.read_byte(0x139)
+        if header_byte == 0x54:
+            game_version = "tara"
+        else:
+            game_version = "cobi"
+
+        sprite = get_settings()["dqm2_options"][f"{game_version}_sprite"]
+        sprite_dict = {
+            "cobi": 0x00, "tara": 0x01, "warubou": 0x02, "kameha": 0x03, "dad": 0x04, "mom": 0x05
+        }
+
+        try:
+            sprite_value = sprite_dict[sprite]
+        except KeyError:
+            sprite_value = sprite_dict[game_version]
+        finally:
+            rom_data.write_byte(get_full_addr(0x04, 0x4b43), sprite_value)
+
+        rom_data.update_checksum()
+        return rom_data.get_bytes()
+
+
 class TaraProcedurePatch(APProcedurePatch, APTokenMixin):
     game = "Dragon Quest Monsters 2"
     hash = DQM2_TARA_HASH
@@ -22,7 +81,8 @@ class TaraProcedurePatch(APProcedurePatch, APTokenMixin):
 
     procedure = [
         ("apply_bsdiff4", ["base_patch.bsdiff4"]),
-        ("apply_tokens", ["token_data.bin"])
+        ("apply_tokens", ["token_data.bin"]),
+        ("apply_post_patch", [])
     ]
 
     @classmethod
@@ -42,7 +102,8 @@ class CobiProcedurePatch(APProcedurePatch, APTokenMixin):
 
     procedure = [
         ("apply_bsdiff4", ["base_patch.bsdiff4"]),
-        ("apply_tokens", ["token_data.bin"])
+        ("apply_tokens", ["token_data.bin"]),
+        ("apply_post_patch", [])
     ]
 
     @classmethod
@@ -110,28 +171,18 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         randomize_breeding_results(world, patch, valid_monster_ids)
 
     core_randomized = (current_core_options["Better Join Rate"] | current_core_options["Randomize Level Up Skills"] |
-            current_core_options["Randomize EXP Growth"] | current_core_options["Randomize Stat Growths"])
+                       current_core_options["Randomize EXP Growth"] | current_core_options["Randomize Stat Growths"])
     if core_randomized:
         randomize_core_monsters(world, patch, current_core_options)
 
-    encounters_randomized = (current_encounter_options["Randomize Encounters"] | current_encounter_options["Randomize Encounter Skills"] | current_encounter_options["Randomize Encounter Stats"] | current_encounter_options["EXP Multiplier"] > 100)
+    encounters_randomized = (current_encounter_options["Randomize Encounters"] | current_encounter_options[
+        "Randomize Encounter Skills"] | current_encounter_options["Randomize Encounter Stats"] |
+                             current_encounter_options["EXP Multiplier"] > 100)
     if encounters_randomized:
         randomize_encounters(world, patch, current_encounter_options)
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch, 0x3FFFF0, slot_name)
-
-    sprite = get_settings()["dqm2_options"][f"{game_version}_sprite"]
-    sprite_dict = {
-        "cobi": 0x00, "tara": 0x01, "warubou": 0x02, "kameha": 0x03, "dad": 0x04, "mom": 0x05
-    }
-
-    try:
-        sprite_value = sprite_dict[sprite]
-    except KeyError:
-        sprite_value = sprite_dict[game_version]
-    finally:
-        write_bytes(patch, get_full_addr(0x04, 0x4b43), bytes([sprite_value]))
 
     patch.write_file("token_data.bin", patch.get_token_binary())
     out_file_name = world.multiworld.get_out_file_name_base(world.player)
@@ -287,7 +338,8 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
             continue
 
         current_byte = all_encounters[encounter]["rom_addr"]
-        current_encounter = create_encounter(world, encounter, all_encounters, valid_ids, random_monsters, random_skills, random_stats, exp_multiplier)
+        current_encounter = create_encounter(world, encounter, all_encounters, valid_ids, random_monsters,
+                                             random_skills, random_stats, exp_multiplier)
         if encounter in pbe.boss_joins:
             create_boss_recruit(world, patch, encounter, current_encounter, options["Encounters Data"])
         if encounter in overworld_bosses:
@@ -300,7 +352,8 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
         write_bytes(patch, current_byte, current_encounter)
 
 
-def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, random_monsters, random_skills, random_stats, exp_multiplier) -> bytes:
+def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, random_monsters, random_skills,
+                     random_stats, exp_multiplier) -> bytes:
     created_encounter = bytearray()
 
     current_encounter = all_encounters[encounter]
@@ -351,7 +404,8 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
             scaling = "Oasis - Overworld"
         created_stats = create_stats(world, current_encounter, scaling, exp_multiplier)
     else:
-        for value in ["exp", "join", "level", "hp", "mp", "atk", "def", "agi", "int", "charge", "defense", "motivation", "mixed"]:
+        for value in ["exp", "join", "level", "hp", "mp", "atk", "def", "agi", "int", "charge", "defense", "motivation",
+                      "mixed"]:
             if value == "exp" and exp_multiplier > 100:
                 current_value = min(int(current_encounter[value] * (exp_multiplier / 100)), 0xFFFF)
             else:
