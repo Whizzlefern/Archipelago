@@ -113,10 +113,15 @@ def set_all_entrance_rules(world: DQM2World) -> None:
 
 def set_all_location_rules(world: DQM2World) -> None:
     # Greatlog
-    # TODO: Do these actually require Sky World?
     world.set_rule(world.get_location(location_names.treetop_chest_1), Has("Sky World Complete"))
     world.set_rule(world.get_location(location_names.treetop_chest_2), Has("Sky World Complete"))
     world.set_rule(world.get_location(location_names.rare_key_shelf), Has("Ice World Complete"))
+
+    world.set_rule(world.get_location(location_names.kid_class), Has("Oasis World Complete"))
+    world.set_rule(world.get_location(location_names.c_class), Has("Oasis World Complete"))
+    world.set_rule(world.get_location(location_names.b_class), Has("Pirate World Complete"))
+    world.set_rule(world.get_location(location_names.a_class), Has("Ice World Complete"))
+    world.set_rule(world.get_location(location_names.s_class), Has("Sky World Complete"))
 
     # Canal
     world.set_rule(world.get_location(location_names.canal_ne_vase_1), HAS_TIDAL_BELL)

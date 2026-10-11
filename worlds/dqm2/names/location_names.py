@@ -7,6 +7,11 @@ farm_mom_gift = "GreatLog: Farm - Gift from Mom"
 
 # Arena
 arena_vase = "GreatLog: Arena - Vase"
+kid_class = "GreatLog: Arena - Kid's Class"
+c_class = "GreatLog: Arena - C Class"
+b_class = "GreatLog: Arena - B Class"
+a_class = "GreatLog: Arena - A Class"
+s_class = "GreatLog: Arena - S Class"
 
 # Residential
 old_man_house_vase = "GreatLog: Housing - Old Man Vase"

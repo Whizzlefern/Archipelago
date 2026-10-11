@@ -21,6 +21,7 @@ RAM_ADDRS = {
     "received_item_index": (0xCC1E, 2, "System Bus"),
     "received_item": (0xCC1D, 1, "System Bus"),
     "location_flags": (0xCBD7, 0x68, "System Bus"),
+    "arena_state": (0xC82C, 1, "System Bus"),
 
     "map_data": (0xFF8E, 5, "System Bus"),
     "story_world_completions": (0xCBDB, 1, "System Bus"),
@@ -80,6 +81,7 @@ class DQM2Client(BizHawkClient):
                 RAM_ADDRS["received_item_index"],
                 RAM_ADDRS["received_item"],
                 RAM_ADDRS["location_flags"],
+                RAM_ADDRS["arena_state"],
                 RAM_ADDRS["map_data"],
                 RAM_ADDRS["story_world_completions"],
                 RAM_ADDRS["post_world_completions"]
@@ -91,15 +93,17 @@ class DQM2Client(BizHawkClient):
             num_received_items = int.from_bytes(read_result[1], "little")
             received_item_is_empty = (read_result[2][0] == 0)
             flag_bytes = read_result[3]
-            position_data = read_result[4]
-            world_completions = read_result[5] + read_result[6]
+            arena_state = read_result[4]
+
+            position_data = read_result[5]
+            world_completions = read_result[6] + read_result[7]
             
             # Only checks for Darck, update once more goals are available
             if (flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x02 == 0x02) and not ctx.finished_game:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 ctx.finished_game = True
 
-            await self.process_checked_locations(ctx, flag_bytes)
+            await self.process_checked_locations(ctx, flag_bytes, arena_state)
             await self.process_tracker_updates(ctx, position_data, world_completions)
             
             if received_item_is_empty:
@@ -109,17 +113,29 @@ class DQM2Client(BizHawkClient):
         except bizhawk.RequestFailedError:
             pass
 
-    async def process_checked_locations(self, ctx: "BizHawkClientContext", flag_bytes):
+    async def process_checked_locations(self, ctx: "BizHawkClientContext", flag_bytes, arena_state):
         checked_locations = set()
 
         for loc_name, loc_data in location_data.items():
 
-            byte_addr = loc_data.ram_addr.byte
-            byte_offset = byte_addr - RAM_ADDRS["location_flags"][0]
-            bit_mask = loc_data.ram_addr.bit_mask
-            if flag_bytes[byte_offset] & bit_mask == bit_mask:
-                location_id = self.location_name_to_id[loc_name]
-                checked_locations.add(location_id)
+            if loc_data.ram_addr is not None:
+                byte_addr = loc_data.ram_addr.byte
+                byte_offset = byte_addr - RAM_ADDRS["location_flags"][0]
+                bit_mask = loc_data.ram_addr.bit_mask
+                if flag_bytes[byte_offset] & bit_mask == bit_mask:
+                    location_id = self.location_name_to_id[loc_name]
+                    checked_locations.add(location_id)
+
+        arena_state = int.from_bytes(arena_state, "little")
+        if arena_state > 0x01:
+            if arena_state >= 0x02:
+                checked_locations.add(0x014)
+            if arena_state >= 0x03:
+                checked_locations.add(0x015)
+            if arena_state >= 0x04:
+                checked_locations.add(0x016)
+            if arena_state >= 0x05:
+                checked_locations.add(0x017)
 
         # logger.info(f"{checked_locations}")
         await ctx.check_locations(checked_locations)

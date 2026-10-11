@@ -39,6 +39,11 @@ location_data = {
 
     # Arena
     ln.arena_vase: LocationData(0x005, rn.arena, RomLoc(0x13, 0x6D47), Flag(0x10C)),
+    ln.kid_class: LocationData(0x013, rn.arena, 0, Flag(0x12F)),
+    ln.c_class: LocationData(0x014, rn.arena, 0),
+    ln.b_class: LocationData(0x015, rn.arena, 0),
+    ln.a_class: LocationData(0x016, rn.arena, 0),
+    ln.s_class: LocationData(0x017, rn.arena, 0),
 
     # Residential
     ln.old_man_house_vase: LocationData(0x006, rn.residential, RomLoc(0x13, 0x6FD2), Flag(0x114)),
