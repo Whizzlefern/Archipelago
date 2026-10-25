@@ -152,7 +152,8 @@ def set_all_location_rules(world: DQM2World) -> None:
     world.set_rule(world.get_location("Ice World Complete"), can_finish_ice_world)
 
     # Norden Castle
-    world.set_rule(world.get_location(location_names.norden_boss_defeated), HAS_HAR_MIRROR)
+    can_reach_norden_boss = HasAll(item_names.crest, item_names.har_mirror)
+    world.set_rule(world.get_location(location_names.norden_boss_defeated), can_reach_norden_boss)
 
     # Westania Castle
     world.set_rule(world.get_location(location_names.westania_castle_boss_defeated), HAS_YUNA_SOUL)
