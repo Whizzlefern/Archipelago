@@ -92,6 +92,16 @@ class RandomizeBreedingResults(Toggle):
     display_name = "Randomize Breeding Results"
 
 
+class StartingPartySize(Range):
+    """
+    How many monsters will start in your party?
+    """
+    display_name = "Starting Party Size"
+    range_start = 1
+    range_end = 3
+    default = 1
+
+
 class RandomizeEncounters(DefaultOnToggle):
     """
     Randomize Encounters.
@@ -193,6 +203,7 @@ class DQM2Options(PerGameCommonOptions):
     randomize_exp_growth: RandomizeEXPGrowth
     randomize_stat_growths: RandomizeStatGrowths
     randomize_breeding_results: RandomizeBreedingResults
+    starting_party_size: StartingPartySize
     randomize_encounters: RandomizeEncounters
     allowed_monsters: AllowedMonsters
     randomize_encounter_skills: RandomizeEncounterSkills
@@ -220,14 +231,11 @@ dqm2_option_groups = [
     ]),
 
     OptionGroup("Encounter Settings", [
+        StartingPartySize,
         RandomizeEncounters,
         AllowedMonsters,
         RandomizeEncounterSkills,
         RandomizeEncounterStats,
         EXPMultiplier
     ])
-
-    # OptionGroup("Cosmetic Settings", [
-    #
-    # ])
 ]

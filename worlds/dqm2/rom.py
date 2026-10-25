@@ -6,6 +6,7 @@ from settings import get_settings
 from worlds.Files import APPatchExtension, APProcedurePatch, APTokenMixin, APTokenTypes
 from .data import encounters_data as pbe, monster_data as cd
 from .locations import location_data
+from .text import char_map
 
 if TYPE_CHECKING:
     from .world import DQM2World
@@ -180,6 +181,53 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
                              current_encounter_options["EXP Multiplier"] > 100)
     if encounters_randomized:
         randomize_encounters(world, patch, current_encounter_options)
+
+    starting_party_size = world.options.starting_party_size.value
+    if starting_party_size  > 1:
+        starter_names = ["Asch", "Ash", "Ashe", "Bash", "Brash", "Cache", "Cash", "Clash", "Crash", "Dash", "Drash",
+                         "Flash", "Gash", "Gnash", "Hash", "Lash", "Mash", "Pash", "Plash", "Rash", "Sash", "Smash",
+                         "Snash", "Stash", "Tache", "Trash"]
+
+        monster2_name_addrs = [0x5018, 0x501b, 0x501e, 0x5021, 0x5024]
+        monster3_name_addrs = [0x516a, 0x516d, 0x5170, 0x5173, 0x5176]
+
+        monster2_name_bytes = []
+        monster3_name_bytes = []
+
+        monster_names = world.random.sample(starter_names, 2)
+
+        for letter in monster_names[0]:
+            monster2_name_bytes.append(char_map[letter])
+        for letter in monster_names[1]:
+            monster3_name_bytes.append(char_map[letter])
+
+        if len(monster2_name_bytes) < 5:
+            while len(monster2_name_bytes) < 5:
+                monster2_name_bytes.append(0xf0)
+        if len(monster3_name_bytes) < 5:
+            while len(monster3_name_bytes) < 5:
+                monster3_name_bytes.append(0xf0)
+
+        idx = 0
+        for addr in monster2_name_addrs:
+            write_bytes(patch, get_full_addr(0xfc, addr), bytes([monster2_name_bytes[idx]]))
+            idx += 1
+
+        idx = 0
+        for addr in monster3_name_addrs:
+            write_bytes(patch, get_full_addr(0xfc, addr), bytes([monster3_name_bytes[idx]]))
+            idx += 1
+
+        if starting_party_size == 2:
+            jump = bytes([0x15])
+            size = bytes([0x02])
+        else:
+            jump = bytes([0x00])
+            size = bytes([0x03])
+
+        write_bytes(patch, get_full_addr(0x07, 0x7f07), jump)
+        write_bytes(patch, get_full_addr(0x07, 0x7f33), size)
+
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch, 0x3FFFF0, slot_name)
