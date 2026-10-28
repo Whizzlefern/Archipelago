@@ -353,7 +353,8 @@ def randomize_encounters(world: "DQM2World", patch, options) -> None:
                       pbe.egg_gifts +  # Requires script edit
                       pbe.summons)  # Requires unique case
 
-    all_encounters = options["Encounters Data"]
+    base_encounters = options["Encounters Data"]
+    all_encounters = base_encounters | pbe.extra_encounters
     valid_ids = options["Valid IDs"]
     random_monsters = options["Randomize Encounters"]
     random_skills = options["Randomize Encounter Skills"]
@@ -414,7 +415,7 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
 
     if encounter_info["Type"] == "Recruitable" or encounter_info["Area"] == "Tower":
         scaling = f"{encounter_info['World']} - {encounter_info['Area']}"
-    elif encounter_info["World"] == "Arena" or encounter_info["Type"].startswith("Wandering"):
+    elif encounter_info["World"] == "Arena" or encounter_info["Type"].startswith("Wandering") or encounter_info["Type"] == "Starting Monster":
         scaling = f"{encounter_info['Type']}"
     else:
         scaling = ""
@@ -447,9 +448,6 @@ def create_encounter(world: "DQM2World", encounter, all_encounters, valid_ids, r
     # Stats
     created_stats = bytearray()
     if random_stats:
-        # Give slash a little boost
-        if encounter == 0x1:
-            scaling = "Oasis - Overworld"
         created_stats = create_stats(world, current_encounter, scaling, exp_multiplier)
     else:
         for value in ["exp", "join", "level", "hp", "mp", "atk", "def", "agi", "int", "charge", "defense", "motivation",
