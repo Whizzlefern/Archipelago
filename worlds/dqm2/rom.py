@@ -228,6 +228,8 @@ def patch_rom(world: "DQM2World", output_directory: str) -> None:
         write_bytes(patch, get_full_addr(0x07, 0x7f07), jump)
         write_bytes(patch, get_full_addr(0x07, 0x7f33), size)
 
+    cur_goal = world.options.goal.value
+    write_bytes(patch, 0x3FFFDF, bytes([cur_goal]))
 
     slot_name = str.encode(world.multiworld.player_name[world.player])
     write_bytes(patch, 0x3FFFF0, slot_name)

@@ -160,8 +160,9 @@ def set_all_location_rules(world: DQM2World) -> None:
 
     # Estria
     world.set_rule(world.get_location(location_names.estria_boss_defeated), HAS_SLEEP_HERB)
-            
-    if world.options.goal > 0:
+
+    # Something better than this some year
+    if world.options.goal > 1:
         # Kiral's House
         world.set_rule(world.get_location("Lonely World Complete"), HAS_WIZ_STONE)
 

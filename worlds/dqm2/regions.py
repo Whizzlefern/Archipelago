@@ -127,7 +127,8 @@ def create_regions(world: DQM2World) -> None:
         darck_manor_region
     ]
 
-    if world.options.goal > 0:
+    # Something better than this some year
+    if world.options.goal > 1:
         # Elf World
         elf_world_region = create_region(world, rn.elf_world)
         west_forest_region = create_region(world, rn.west_forest)
@@ -236,7 +237,8 @@ def connect_regions(world: DQM2World) -> None:
     # Limbo World
     connect(world, world.player, en.limbo_to_darck_manor, rn.limbo_world, rn.darck_manor)
 
-    if world.options.goal > 0:
+    # Something better than this some year
+    if world.options.goal > 1:
         # GreatLog
         connect(world, world.player, en.greatlog_to_elf, rn.greatlog, rn.elf_world)
         connect(world, world.player, en.greatlog_to_lonely, rn.greatlog, rn.lonely_world)
@@ -302,7 +304,8 @@ def create_events(world: DQM2World):
     demon_castle_region.add_event("Sky World Complete", "Sky World Complete", location_type=DQM2Location,
                                   item_type=DQM2Item)
 
-    if world.options.goal > 0:
+    # Something better than this some year
+    if world.options.goal > 1:
         east_forest_region = world.get_region(rn.east_forest)
         kiral_basement_region = world.get_region(rn.kiral_basement)
         dark_tower_region = world.get_region(rn.dark_tower)
@@ -313,7 +316,9 @@ def create_events(world: DQM2World):
                                         item_type=DQM2Item)
         dark_tower_region.add_event("Travel World Complete", "Travel World Complete", location_type=DQM2Location,
                                     item_type=DQM2Item)
-
+    elif world.options.goal == 1:
+        arena_region = world.get_region(rn.arena)
+        arena_region.add_event("S Class Master", "Victory", location_type=DQM2Location, item_type=DQM2Item)
     else:
         darck_manor_region = world.get_region(rn.darck_manor)
         darck_manor_region.add_event("Final Boss Defeated", "Victory", location_type=DQM2Location, item_type=DQM2Item)

@@ -6,10 +6,12 @@ class Goal(Choice):
     """
     Pick your victory condition.
 
-    Darck: Defeat Darck at Darck Manor
+    Darck: Defeat Darck at Darck Manor.
+    Arena: Become an S Class Master.
     """
     disply_name = "Goal"
     option_darck = 0
+    option_arena = 1
     default = 0
 
 

@@ -13,7 +13,8 @@ if TYPE_CHECKING:
 
 ROM_ADDRS = {
     "game_identifier": (0x0134, 0x06, "ROM"),
-    "slot_name": (0x3FFFF0, 0xF, "ROM")
+    "slot_name": (0x3FFFF0, 0xF, "ROM"),
+    "goal": (0x3FFFDF, 1, "ROM")
 }
 
 RAM_ADDRS = {
@@ -76,6 +77,8 @@ class DQM2Client(BizHawkClient):
             return
 
         try:
+            get_goal = await bizhawk.read(ctx.bizhawk_ctx, [ROM_ADDRS["goal"]])
+            get_goal = int.from_bytes(get_goal[0])
             read_result = await bizhawk.read(ctx.bizhawk_ctx, [
                 RAM_ADDRS["game_state"],
                 RAM_ADDRS["received_item_index"],
@@ -98,8 +101,13 @@ class DQM2Client(BizHawkClient):
             position_data = read_result[5]
             world_completions = read_result[6] + read_result[7]
             
-            # Only checks for Darck, update once more goals are available
-            if (flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x02 == 0x02) and not ctx.finished_game:
+            # I think I should set goal on credits at some point, and then have the game report it is in credits somehow or something
+            if get_goal == 1:
+                goal_condition = (int.from_bytes(arena_state) == 0x05 and not ctx.finished_game)
+            else:
+                goal_condition = ((flag_bytes[0xCBF1 - RAM_ADDRS["location_flags"][0]] & 0x02 == 0x02) and not ctx.finished_game)
+
+            if goal_condition:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 ctx.finished_game = True
 
@@ -127,15 +135,14 @@ class DQM2Client(BizHawkClient):
                     checked_locations.add(location_id)
 
         arena_state = int.from_bytes(arena_state, "little")
-        if arena_state > 0x01:
-            if arena_state >= 0x02:
-                checked_locations.add(0x014)
-            if arena_state >= 0x03:
-                checked_locations.add(0x015)
-            if arena_state >= 0x04:
-                checked_locations.add(0x016)
-            if arena_state >= 0x05:
-                checked_locations.add(0x017)
+        if arena_state >= 0x02:
+            checked_locations.add(0x014)
+        if arena_state >= 0x03:
+            checked_locations.add(0x015)
+        if arena_state >= 0x04:
+            checked_locations.add(0x016)
+        if arena_state >= 0x05:
+            checked_locations.add(0x017)
 
         # logger.info(f"{checked_locations}")
         await ctx.check_locations(checked_locations)
